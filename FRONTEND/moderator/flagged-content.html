@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare Flagged Content</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f7f4e8;
+      color: #4b3428;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .paper {
+      background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
+    .nav-link:hover {
+      background: #f1d6ad;
+    }
+
+    .card-hover {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12);
+    }
+  </style>
+</head>
+<body class="paper">
+  <div class="relative flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="hidden w-72 flex-col border-r border-[#4b3428]/10 bg-white/65 p-6 backdrop-blur lg:flex">
+      <div class="flex items-center gap-3">
+        <div class="flex h-14 w-14 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">🛡️</div>
+        <div>
+          <div class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">PawCare</div>
+          <div class="text-2xl font-black">Moderator</div>
+        </div>
+      </div>
+
+      <nav class="mt-10 space-y-3">
+        <a href="dashboard-moderator.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">🏠 Dashboard</a>
+        <a href="review-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">📄 Review Content</a>
+        <a href="flagged-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">🚩 Flagged Content</a>
+        <a href="featured-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">⭐ Featured Content</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 px-6 py-6 md:px-8 lg:px-10">
+      <header class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Moderator tools</p>
+        <h1 class="mt-2 text-4xl font-black md:text-5xl">Flagged Content</h1>
+        <p class="mt-3 max-w-2xl text-base leading-7 text-[#6b5b4e] md:text-lg">
+          Review unsafe, misleading, or questionable pet care advice reported for moderator action.
+        </p>
+      </header>
+
+      <!-- Mobile Navigation -->
+      <div class="mb-6 flex gap-2 overflow-x-auto lg:hidden">
+        <a href="dashboard-moderator.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🏠 Dashboard</a>
+        <a href="review-content.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">📄 Review</a>
+        <a href="flagged-content.html" class="whitespace-nowrap rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white shadow-sm">🚩 Flagged</a>
+        <a href="featured-content.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">⭐ Featured</a>
+      </div>
+
+      <!-- DYNAMIC CONTENT AREA -->
+      <div id="flaggedContainer" class="space-y-5">
+        <!-- REAL CONTENT INJECTED BY JAVASCRIPT -->
+        <div class="p-20 text-center text-gray-400 italic">
+          Checking database for flagged content...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5001/api/resources";
+
+    // 1. Function to Load Flagged Items
+    async function loadFlagged() {
+      try {
+        // Fetch only items where status is 'flagged'
+        const res = await fetch(`${API_URL}?status=flagged`);
+        const data = await res.json();
+        const container = document.getElementById("flaggedContainer");
+
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="bg-white/60 p-16 rounded-[32px] text-center border border-dashed border-[#4b3428]/20">
+              <div class="text-5xl mb-4">✅</div>
+              <div class="text-xl font-bold">All clear!</div>
+              <div class="text-[#6b5b4e]">No content is currently flagged for review.</div>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = data.map(item => `
+          <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm">
+            <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <div class="text-2xl font-black">${item.title}</div>
+                <div class="mt-1 text-sm text-red-600 font-bold uppercase tracking-wider">
+                  Flag reason: ${item.flagReason || 'Reported by community'}
+                </div>
+                <div class="mt-4 rounded-2xl bg-[#fff7ea] p-4 text-sm leading-7 border border-[#e1b453]/20 shadow-inner">
+                  <strong>Reported Content Body:</strong><br>
+                  ${item.content}
+                </div>
+                <p class="mt-3 text-[11px] text-gray-400 italic">Submitted by: ${item.publishedBy || 'Unknown'}</p>
+              </div>
+              <span class="rounded-full ${item.riskLevel === 'High Risk' ? 'bg-[#e7c0b8]' : 'bg-[#f1d6ad]'} px-4 py-2 text-sm font-semibold whitespace-nowrap">
+                ${item.riskLevel || 'Needs Review'}
+              </span>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button onclick="removeContent('${item._id}')" class="rounded-2xl bg-[#e7c0b8] px-5 py-3 font-semibold shadow-sm hover:bg-red-400 transition">Remove Content</button>
+              <button onclick="updateStatus('${item._id}', 'changes_requested')" class="rounded-2xl bg-[#f1d6ad] px-5 py-3 font-semibold shadow-sm hover:bg-[#e1b453] transition">Send for Revision</button>
+              <button onclick="updateStatus('${item._id}', 'approved')" class="rounded-2xl bg-[#5d7a49] px-5 py-3 font-semibold text-white shadow-lg hover:bg-[#4a633a] transition">Mark Resolved</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (e) {
+        console.error("Error fetching data:", e);
+        document.getElementById("flaggedContainer").innerHTML = "Error connecting to the server.";
+      }
+    }
+
+    // 2. Action: Remove Content (Delete)
+    async function removeContent(id) {
+      if (confirm("Are you sure you want to permanently delete this content? This cannot be undone.")) {
+        try {
+          const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          if (res.ok) {
+            loadFlagged(); // Refresh list
+          }
+        } catch (err) {
+          alert("Error deleting resource.");
+        }
+      }
+    }
+
+    // 3. Action: Update Status (Resolve or Revision)
+    async function updateStatus(id, newStatus) {
+      let notes = "";
+      
+      // If asking for revision, get a reason to send to the owner
+      if (newStatus === 'changes_requested') {
+        notes = prompt("Please enter the correction instructions for the owner:");
+        if (!notes) return; // Cancel if no note provided
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            status: newStatus,
+            moderatorNotes: notes,
+            flagReason: "" // Clear the flag when resolving/revising
+          })
+        });
+
+        if (res.ok) {
+          alert(newStatus === 'approved' ? "Content Resolved and Restored!" : "Revision requested from owner.");
+          loadFlagged(); // Refresh list
+        }
+      } catch (err) {
+        alert("Error updating content status.");
+      }
+    }
+
+    // Initialize the page
+    window.onload = loadFlagged;
+  </script>
+</body>
+</html>

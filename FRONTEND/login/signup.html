@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    body {
+      background: #f7f4e8;
+      font-family: Arial, sans-serif;
+      color: #4b3428;
+    }
+
+    .paper {
+      position: relative;
+      background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+      background-size: 22px 22px;
+      min-height: 100vh;
+    }
+
+    .floaty { animation: floaty 4s infinite; }
+
+    .password-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+  </style>
+</head>
+
+<body class="paper overflow-x-hidden">
+  <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/70 blur-[1px]"></div>
+  <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/70 blur-[1px]"></div>
+  <div class="absolute left-[10%] top-[16%] text-3xl opacity-30 floaty">🐾</div>
+
+  <main class="relative flex min-h-screen items-center justify-center px-6 py-10">
+    <div class="w-full max-w-md rounded-[36px] border border-[#4b3428]/10 bg-white/85 p-8 shadow-2xl backdrop-blur md:p-10">
+      <div class="text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">🐾</div>
+        <p class="mt-4 text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Create Account</p>
+        <h2 class="mt-2 text-3xl font-black">Sign Up to PawCare</h2>
+        <p class="mt-3 text-[#6b5b4e]">Create your pet owner account to get started.</p>
+      </div>
+
+      <form id="signupForm" class="mt-8 space-y-4">
+        <div>
+          <label class="mb-2 block text-sm font-semibold">Full Name</label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Enter your full name"
+            class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 outline-none transition focus:border-[#5d7a49]"
+            required
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold">Email Address</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 outline-none transition focus:border-[#5d7a49]"
+            required
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold">Password</label>
+          <div class="relative">
+            <input
+              id="password"
+              type="password"
+              placeholder="Create your password"
+              class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 pr-11 outline-none transition focus:border-[#5d7a49]"
+              required
+            />
+
+            <button
+              type="button"
+              onclick="togglePassword('password', 'eyeIcon1')"
+              class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-[#7c8a5a] transition hover:opacity-70"
+              aria-label="Toggle password visibility"
+            >
+              <svg id="eyeIcon1" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold">Confirm Password</label>
+          <div class="relative">
+            <input
+              id="confirm"
+              type="password"
+              placeholder="Confirm your password"
+              class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 pr-11 outline-none transition focus:border-[#5d7a49]"
+              required
+            />
+
+            <button
+              type="button"
+              onclick="togglePassword('confirm', 'eyeIcon2')"
+              class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-[#7c8a5a] transition hover:opacity-70"
+              aria-label="Toggle confirm password visibility"
+            >
+              <svg id="eyeIcon2" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full rounded-2xl bg-[#5d7a49] px-5 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-1"
+        >
+          Sign Up
+        </button>
+      </form>
+
+      <p id="message" class="mt-4 text-center text-sm font-medium"></p>
+
+      <p class="mt-6 text-center text-sm text-[#6b5b4e]">
+        Already have an account?
+        <a href="login.html" class="font-semibold text-[#5d7a49]">Log in</a>
+      </p>
+
+      <p class="mt-3 text-center text-sm text-[#6b5b4e]">
+        <a href="PAWCARE2026.html" class="font-semibold text-[#5d7a49]">Back to landing page</a>
+      </p>
+    </div>
+  </main>
+
+<script>
+  const form = document.getElementById("signupForm");
+  const message = document.getElementById("message");
+
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+    const role = "owner"; // Default role for new signups
+
+    // 1. Validation
+    if (!name || !email || !password || !confirm) {
+      message.textContent = "Please fill all fields!";
+      message.style.color = "red";
+      return;
+    }
+
+    if (password !== confirm) {
+      message.textContent = "Passwords do not match!";
+      message.style.color = "red";
+      return;
+    }
+
+    try {
+      // 2. FETCH - Note the updated URL path: /api/manage-users
+      const res = await fetch("http://localhost:5001/api/manage-users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        message.textContent = data.error || "Signup failed.";
+        message.style.color = "red";
+        return;
+      }
+
+      // 3. Success
+      localStorage.setItem("currentUser", JSON.stringify(data));
+      message.textContent = "Account created! Redirecting...";
+      message.style.color = "green";
+
+      form.reset();
+
+      setTimeout(() => {
+        // Redirect to the owner dashboard
+        window.location.href = "../user/dashboard-owner.html";
+      }, 1500);
+
+    } catch (error) {
+      console.error("Signup Error:", error);
+      message.textContent = "Cannot connect to backend server. Is it running on port 5001?";
+      message.style.color = "red";
+    }
+  });
+
+  // Password Visibility Logic
+  function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === "password") {
+      input.type = "text";
+      icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+    } else {
+      input.type = "password";
+      icon.innerHTML = `<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="3"></circle>`;
+    }
+  }
+</script>
+</body>
+</html>

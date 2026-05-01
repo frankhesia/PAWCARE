@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Review Suggestions - PawCare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f7f4e8] p-10 font-sans">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-black">Review Queue 🛡️</h1>
+      <a href="dashboard-moderator.html" class="bg-white px-4 py-2 rounded-xl font-bold border">← Back</a>
+    </div>
+
+    <div id="pendingList" class="space-y-6">
+      <p class="text-gray-500">Checking for suggestions...</p>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5001/api/resources";
+
+    async function loadPending() {
+      const res = await fetch(`${API_URL}?status=pending`);
+      const data = await res.json();
+      const list = document.getElementById("pendingList");
+      
+      if(data.length === 0) {
+        list.innerHTML = `<div class="bg-white p-10 rounded-3xl text-center">✅ No suggestions to review.</div>`;
+        return;
+      }
+
+      list.innerHTML = data.map(item => `
+        <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+          <h3 class="font-black text-2xl text-[#4b3428]">${item.title}</h3>
+          <p class="text-sm text-gray-400 mb-4 italic">By: ${item.publishedBy}</p>
+          <div class="bg-gray-50 p-6 rounded-2xl mb-6 text-[#6b5b4e] leading-relaxed">
+            ${item.content}
+          </div>
+          <div class="flex gap-4">
+            <button onclick="approve('${item._id}')" class="bg-[#5d7a49] text-white px-8 py-3 rounded-2xl font-bold">Approve & Publish</button>
+            <button onclick="reject('${item._id}')" class="text-red-500 px-8 py-3 rounded-2xl font-bold border border-red-50">Discard</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function approve(id) {
+      await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" })
+      });
+      loadPending();
+    }
+
+    async function reject(id) {
+      if(confirm("Delete this suggestion?")) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        loadPending();
+      }
+    }
+    loadPending();
+  </script>
+</body>
+</html>

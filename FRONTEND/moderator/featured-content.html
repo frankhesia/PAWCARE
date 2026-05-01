@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare Featured Content</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f7f4e8;
+      color: #4b3428;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .paper {
+      background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
+    .nav-link:hover {
+      background: #f1d6ad;
+    }
+
+    .card-hover {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12);
+    }
+  </style>
+</head>
+<body class="paper">
+  <div class="relative flex min-h-screen">
+    <aside class="hidden w-72 flex-col border-r border-[#4b3428]/10 bg-white/65 p-6 backdrop-blur lg:flex">
+      <div class="flex items-center gap-3">
+        <div class="flex h-14 w-14 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">🛡️</div>
+        <div>
+          <div class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">PawCare</div>
+          <div class="text-2xl font-black">Moderator</div>
+        </div>
+      </div>
+
+      <nav class="mt-10 space-y-3">
+        <a href="dashboard-moderator.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">🏠 Dashboard</a>
+        <a href="review-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">📄 Review Content</a>
+        <a href="flagged-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">🚩 Flagged Content</a>
+        <a href="featured-content.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">⭐ Featured Content</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 px-6 py-6 md:px-8 lg:px-10">
+      <header class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Moderator tools</p>
+        <h1 class="mt-2 text-4xl font-black md:text-5xl">Featured Content</h1>
+        <p class="mt-3 max-w-2xl text-base leading-7 text-[#6b5b4e] md:text-lg">
+          Highlight trusted pet care content so users can quickly find the safest and most useful guides.
+        </p>
+      </header>
+
+      <div class="mb-6 flex gap-2 overflow-x-auto lg:hidden">
+        <a href="dashboard-moderator.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🏠 Dashboard</a>
+        <a href="review-content.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">📄 Review</a>
+        <a href="flagged-content.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🚩 Flagged</a>
+        <a href="featured-content.html" class="whitespace-nowrap rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white shadow-sm">⭐ Featured</a>
+      </div>
+
+      <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm">
+          <div class="text-2xl font-black">Dog Feeding Guide</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">Nutrition • Trusted veterinary-reviewed content</div>
+          <div class="mt-4 rounded-2xl bg-[#f8f3e8] p-4 text-sm">
+            Helps owners understand balanced feeding, portion control, and mealtime routines.
+          </div>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button class="rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white">Feature</button>
+            <button class="rounded-2xl bg-[#f1d6ad] px-4 py-2 font-semibold">Preview</button>
+          </div>
+        </div>
+
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-[#fff7ea] p-6 shadow-sm">
+          <div class="text-2xl font-black">Cat Grooming Basics</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">Grooming • Safe beginner-friendly guide</div>
+          <div class="mt-4 rounded-2xl bg-white p-4 text-sm">
+            Covers brushing, nail trimming, and hygiene tips for first-time cat owners.
+          </div>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button class="rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white">Feature</button>
+            <button class="rounded-2xl bg-[#f1d6ad] px-4 py-2 font-semibold">Preview</button>
+          </div>
+        </div>
+
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm">
+          <div class="text-2xl font-black">Vaccination Reminder Tips</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">Health • Recommended seasonal guide</div>
+          <div class="mt-4 rounded-2xl bg-[#f8f3e8] p-4 text-sm">
+            Helps owners stay on schedule with boosters, vet visits, and preventive care.
+          </div>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button class="rounded-2xl bg-[#e7c0b8] px-4 py-2 font-semibold">Remove Featured</button>
+            <button class="rounded-2xl bg-[#f1d6ad] px-4 py-2 font-semibold">Preview</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
