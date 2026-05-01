@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare Moderator Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f7f4e8; color: #4b3428; font-family: sans-serif; margin: 0; }
+    .paper { background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px); background-size: 22px 22px; }
+  </style>
+</head>
+<body class="paper">
+  <div class="flex min-h-screen w-full">
+    
+    <!-- SIDEBAR -->
+    <aside class="w-72 border-r border-[#4b3428]/10 bg-white/60 p-6 backdrop-blur flex-shrink-0 flex flex-col sticky top-0 h-screen">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="text-3xl bg-[#f1d6ad] p-3 rounded-2xl">🛡️</div>
+        <h2 class="text-2xl font-black">Moderator</h2>
+      </div>
+      
+      <nav class="space-y-3">
+        <a href="dashboard-moderator.html" class="flex items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">
+          🏠 Dashboard
+        </a>
+        <a href="review-content.html" class="flex items-center justify-between rounded-2xl bg-white px-4 py-3 font-semibold hover:bg-[#f1d6ad] transition">
+          <div class="flex items-center gap-3">📄 Review Content</div>
+          <span id="pendingBadge" class="bg-red-500 text-white text-[10px] px-2 py-1 rounded-full hidden">0</span>
+        </a>
+      </nav>
+
+      <div class="mt-auto p-4 bg-[#5d7a49]/5 rounded-2xl border border-[#5d7a49]/10">
+        <p class="text-xs font-bold text-[#5d7a49] uppercase">Moderator Note</p>
+        <p class="text-xs text-[#6b5b4e] mt-1">Posts added here are approved immediately. Review owner suggestions in the Review tab.</p>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-10 overflow-y-auto">
+      
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-10">
+        <div>
+          <h1 class="text-4xl font-black">Hello, Moderator 👋</h1>
+          <p class="text-[#6b5b4e]">Managing database resources in real-time.</p>
+        </div>
+        <button onclick="logout()" class="bg-white border border-[#4b3428]/10 px-6 py-3 rounded-2xl font-bold shadow-sm hover:bg-gray-50">
+          Logout
+        </button>
+      </header>
+
+      <!-- CONTENT GRID -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+        
+        <!-- COLUMN 1: PUBLISH FORM -->
+        <div class="bg-white/80 p-8 rounded-[32px] border border-[#4b3428]/10 shadow-sm h-fit">
+          <h2 class="text-2xl font-black mb-6">Publish Resource</h2>
+          <div class="space-y-4">
+            <input id="resTitle" type="text" placeholder="Title" class="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 ring-[#f1d6ad]">
+           <div>
+  <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Category</label>
+  <select id="resCategory" class="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 ring-[#f1d6ad]">
+    <option value="Health">Health</option>
+    <option value="Training">Training</option>
+    <option value="Nutrition">Nutrition</option>
+    <option value="General">General</option>
+  </select>
+</div>
+            <textarea id="resContent" placeholder="Resource Content..." class="w-full p-4 h-48 rounded-2xl border border-gray-100 bg-gray-50 outline-none resize-none focus:ring-2 ring-[#f1d6ad]"></textarea>
+            <button onclick="addResource()" class="w-full bg-[#5d7a49] text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-[#4a633a] transition transform hover:-translate-y-1">
+              Save & Approve to Database
+            </button>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: LIVE LIST -->
+        <div class="bg-white/80 p-8 rounded-[32px] border border-[#4b3428]/10 shadow-sm flex flex-col h-[700px]">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black">Live Resources</h2>
+            <div class="flex items-center gap-2">
+                <span id="resourceCount" class="bg-[#5d7a49] text-white px-4 py-1 rounded-full text-sm font-bold">0</span>
+            </div>
+          </div>
+          
+          <div id="resourceList" class="space-y-4 overflow-y-auto pr-2">
+            <!-- Items injected by JS -->
+            <p class="text-gray-400">Loading resources...</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5001/api/resources";
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+
+    // Security Check
+    if (!user || user.role !== 'moderator') {
+        window.location.href = "../login/login.html";
+    }
+
+    // Load Approved/Live Resources
+    async function loadResources() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        
+        // Filter out pending items from the 'Live' list if you only want to see approved ones
+        const liveData = data.filter(item => item.status === 'approved');
+        
+        document.getElementById("resourceCount").innerText = liveData.length;
+        const container = document.getElementById("resourceList");
+
+        if (liveData.length === 0) {
+            container.innerHTML = `<p class="text-center p-10 text-gray-400 italic">No live resources found.</p>`;
+            return;
+        }
+
+        container.innerHTML = liveData.map(item => `
+          <div class="p-5 bg-[#f8f3e8] rounded-2xl relative border border-[#4b3428]/5">
+            <button onclick="deleteRes('${item._id}')" class="absolute top-4 right-4 text-red-400 hover:text-red-600 font-bold text-xs">Delete</button>
+            <h3 class="font-black text-lg text-[#4b3428]">${item.title}</h3>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-[10px] font-bold uppercase text-[#7c8a5a] bg-white px-2 py-1 rounded-md">${item.category}</span>
+                <span class="text-[10px] text-gray-400">By ${item.publishedBy}</span>
+            </div>
+            <p class="text-sm text-[#6b5b4e] leading-relaxed">${item.content}</p>
+          </div>
+        `).join("");
+      } catch (e) { 
+          console.error("Database connection error"); 
+      }
+    }
+
+    // Add Resource with Auto-Approval
+    async function addResource() {
+  const title = document.getElementById("resTitle").value;
+  const category = document.getElementById("resCategory").value; // This now gets the dropdown value
+  const content = document.getElementById("resContent").value;
+
+  if(!title || !content) return alert("Please fill Title and Content");
+
+  try {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            title, 
+            category, 
+            content, 
+            publishedBy: user.name,
+            role: "moderator" 
+        })
+    });
+
+        if (response.ok) {
+            document.getElementById("resTitle").value = "";
+            document.getElementById("resCategory").value = "";
+            document.getElementById("resContent").value = "";
+            loadResources();
+            checkPendingCount(); // Update badge
+        }
+      } catch (err) {
+          alert("Error saving resource.");
+      }
+    }
+
+    // Delete Resource
+    async function deleteRes(id) {
+      if(confirm("Permanently delete this resource?")) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        loadResources();
+        checkPendingCount();
+      }
+    }
+
+    // Check for Pending Items (for the Sidebar Badge)
+    async function checkPendingCount() {
+        try {
+            const res = await fetch(`${API_URL}?status=pending`);
+            const data = await res.json();
+            const badge = document.getElementById("pendingBadge");
+            if (data.length > 0) {
+                badge.innerText = data.length;
+                badge.classList.remove("hidden");
+            } else {
+                badge.classList.add("hidden");
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "../PAWCARE2026.html";
+    }
+
+    // Initialize
+    loadResources();
+    checkPendingCount();
+  </script>
+</body>
+</html>

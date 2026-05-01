@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PawCare | Happy Pets & Confident Owners</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes floaty {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(2deg); }
+      }
+
+      @keyframes drift {
+        0% { transform: translateX(0px); }
+        50% { transform: translateX(12px); }
+        100% { transform: translateX(0px); }
+      }
+
+      @keyframes pulseSoft {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: #f7f4e8;
+        color: #4b3428;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .paper {
+        position: relative;
+        background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+        background-size: 22px 22px;
+      }
+
+      .floaty { animation: floaty 4s ease-in-out infinite; }
+      .drift { animation: drift 8s ease-in-out infinite; }
+      .pulseSoft { animation: pulseSoft 3.2s ease-in-out infinite; }
+    </style>
+  </head>
+  <body>
+    <div class="paper min-h-screen overflow-x-hidden bg-[#f7f4e8] text-[#4b3428] selection:bg-[#d7d48b] selection:text-[#3a2a1f]">
+      <!-- Background Decorations -->
+      <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/70 blur-[1px]"></div>
+      <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/70 blur-[1px]"></div>
+      <div class="absolute left-[8%] top-[16%] text-3xl opacity-30 floaty">🐾</div>
+      <div class="absolute right-[12%] top-[22%] text-2xl opacity-30 drift">🐾</div>
+      <div class="absolute left-[14%] bottom-[28%] text-2xl opacity-25 drift">🐾</div>
+      <div class="absolute right-[8%] bottom-[18%] text-3xl opacity-25 floaty">🐾</div>
+
+      <!-- HERO SECTION -->
+      <section class="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:px-10 lg:px-16">
+        <div class="space-y-8">
+          <div class="space-y-5">
+            <h1 class="max-w-xl text-5xl font-black leading-[0.95] tracking-tight md:text-6xl lg:text-7xl">
+              PawCare for
+              <span class="block text-[#5d7a49]">happy pets</span>
+              and confident owners
+            </h1>
+            <p class="max-w-xl text-lg leading-8 text-[#5c4a3b] md:text-xl">
+              A soft, welcoming space to organize routines, learn better care habits,
+              and support responsible pet ownership with simple tools made for dog and cat families.
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-4 sm:flex-row">
+            <a href="#features" class="rounded-2xl bg-[#5d7a49] px-6 py-4 text-base font-semibold text-white shadow-lg transition hover:-translate-y-1 text-center">
+              Explore features
+            </a>
+            <button onclick="openHowItWorks()" class="rounded-2xl border border-[#4b3428]/15 bg-white/80 px-6 py-4 text-base font-semibold shadow-sm backdrop-blur transition hover:-translate-y-1 text-center">
+              See how it works
+            </button>
+          </div>
+
+          <div class="grid max-w-xl grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="rounded-3xl border border-[#4b3428]/10 bg-white/70 p-4 shadow-sm backdrop-blur">
+              <div class="text-2xl font-black text-[#5d7a49]">Smart</div>
+              <div class="mt-1 text-sm text-[#6b5b4e]">Care reminders</div>
+            </div>
+            <div class="rounded-3xl border border-[#4b3428]/10 bg-white/70 p-4 shadow-sm backdrop-blur">
+              <div class="text-2xl font-black text-[#5d7a49]">Multi-pet</div>
+              <div class="mt-1 text-sm text-[#6b5b4e]">Pet profiles</div>
+            </div>
+            <div class="rounded-3xl border border-[#4b3428]/10 bg-white/70 p-4 shadow-sm backdrop-blur">
+              <div class="text-2xl font-black text-[#5d7a49]">Instant</div>
+              <div class="mt-1 text-sm text-[#6b5b4e]">Guidance</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: PHOTO -->
+        <div class="relative flex items-center justify-center">
+          <div class="absolute -left-4 top-10 z-10 rounded-3xl bg-white/90 px-5 py-3 shadow-xl backdrop-blur floaty border border-[#7c8a5a]/20">
+            <div class="text-sm font-bold text-[#5d7a49]">Vaccine reminder</div>
+            <div class="text-xs text-[#6b5b4e]">Tomorrow • 10:00 AM</div>
+          </div>
+          <div class="absolute -right-10 top-10 z-10 rounded-3xl bg-[#fff8e7]/90 px-5 py-3 shadow-xl pulseSoft border border-[#e1b453]/20">
+            <div class="text-sm font-bold text-[#b48a2e]">AI Care Tip</div>
+            <div class="text-xs text-[#6b5b4e]">Hydration matters after playtime</div>
+          </div>
+
+          <div class="relative w-full max-w-[500px] rounded-[40px] border border-[#4b3428]/10 bg-white p-4 shadow-2xl backdrop-blur overflow-hidden group">
+            <div class="absolute -top-5 right-8 text-6xl floaty z-20">🐾</div>
+            <div class="overflow-hidden rounded-[32px] aspect-[4/5] relative">
+              <img 
+                src="mypet.jpg" 
+                alt="Happy Dog and Cat" 
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60"></div>
+              <div class="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30">
+                <p class="text-white font-black text-xl tracking-tight">Your Pet's Best Life Starts Here</p>
+                <p class="text-white/80 text-xs font-medium uppercase tracking-widest mt-1">For Dogs, Cats & Everyone In Between</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES SECTION -->
+      <section id="features" class="mx-auto max-w-7xl px-6 pb-10 md:px-10 lg:px-16">
+        <div class="mb-8 flex items-end justify-between gap-6">
+          <div>
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Features</p>
+            <h2 class="text-3xl font-black md:text-5xl">Everything pet owners need</h2>
+          </div>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div class="group rounded-[28px] border border-[#4b3428]/10 bg-white/75 p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f1d6ad] text-2xl transition group-hover:scale-110">🐾</div>
+            <h3 class="text-xl font-black">User & Pet Profiles</h3>
+            <p class="mt-3 leading-7 text-[#6d5b4c]">Create warm, organized profiles for every furry family member.</p>
+          </div>
+          <div class="group rounded-[28px] border border-[#4b3428]/10 bg-white/75 p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f1d6ad] text-2xl transition group-hover:scale-110">📅</div>
+            <h3 class="text-xl font-black">Pet Care Calendar</h3>
+            <p class="mt-3 leading-7 text-[#6d5b4c]">Track vaccines, grooming, feeding, and vet visits in one place.</p>
+          </div>
+          <div class="group rounded-[28px] border border-[#4b3428]/10 bg-white/75 p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f1d6ad] text-2xl transition group-hover:scale-110">💬</div>
+            <h3 class="text-xl font-black">AI Care Chat</h3>
+            <p class="mt-3 leading-7 text-[#6d5b4c]">Get quick pet-care tips and friendly guidance whenever you need it.</p>
+          </div>
+          <div class="group rounded-[28px] border border-[#4b3428]/10 bg-white/75 p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f1d6ad] text-2xl transition group-hover:scale-110">📚</div>
+            <h3 class="text-xl font-black">Resource Center</h3>
+            <p class="mt-3 leading-7 text-[#6d5b4c]">Browse guides, tutorials, and practical advice for responsible ownership.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA SECTION -->
+      <section class="mx-auto max-w-7xl px-6 pb-20 md:px-10 lg:px-16">
+        <div class="rounded-[36px] border border-[#4b3428]/10 bg-white/80 p-8 shadow-xl backdrop-blur md:p-10">
+          <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <p class="mb-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Get Started</p>
+              <h2 class="text-3xl font-black md:text-5xl">Start caring for your pets the smart way.</h2>
+              <p class="mt-5 max-w-2xl text-lg leading-8 text-[#6b5b4e]">
+                Log in to manage your pets or create a new account to begin your PawCare journey.
+              </p>
+            </div>
+            <div class="rounded-[30px] bg-[#f7f1df] p-6 shadow-inner text-center">
+              <div class="mb-4 flex items-center justify-between">
+                <div class="text-xl font-black">Welcome to PawCare</div>
+                <div class="text-3xl">🐕</div>
+              </div>
+              <a href="login/login.html" class="w-full rounded-2xl bg-[#5d7a49] px-5 py-3 font-semibold text-white transition hover:-translate-y-1 block">
+                Login
+              </a>
+              <p class="mt-3 text-sm text-[#7a6a5a]">Trusted for dogs, cats, and growing households.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- HOW IT WORKS MODAL -->
+    <div id="howItWorksModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-[#4b3428]/40 backdrop-blur-md p-4">
+        <div class="w-full max-w-4xl rounded-[40px] bg-[#f7f4e8] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-white/50">
+            <div class="absolute -bottom-10 -right-10 text-[200px] opacity-5 rotate-12">🐾</div>
+            <div class="relative z-10">
+                <div class="flex justify-between items-center mb-10">
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-widest text-[#7c8a5a]">Simple Guide</p>
+                        <h2 class="text-4xl font-black text-[#4b3428]">How PawCare Works 🐾</h2>
+                    </div>
+                    <button onclick="closeHowItWorks()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/50 hover:bg-red-50 hover:text-red-500 transition text-2xl">✕</button>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="bg-white/60 p-6 rounded-[32px] border border-white/50 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-[#f1d6ad] rounded-2xl flex items-center justify-center text-xl font-black mb-4">1</div>
+                        <h3 class="font-black text-xl mb-2">Create Profiles</h3>
+                        <p class="text-sm text-[#6b5b4e] leading-relaxed">Sign up and add your dogs or cats. Keep all their details and medical history in one soft, organized space.</p>
+                    </div>
+                    <div class="bg-white/60 p-6 rounded-[32px] border border-white/50 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-[#5d7a49] text-white rounded-2xl flex items-center justify-center text-xl font-black mb-4">2</div>
+                        <h3 class="font-black text-xl mb-2">Plan Routines</h3>
+                        <p class="text-sm text-[#6b5b4e] leading-relaxed">Set reminders for vaccines, feeding, and grooming. Our calendar helps you stay on track easily.</p>
+                    </div>
+                    <div class="bg-white/60 p-6 rounded-[32px] border border-white/50 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-[#e1b453] rounded-2xl flex items-center justify-center text-xl font-black mb-4">3</div>
+                        <h3 class="font-black text-xl mb-2">Learn & Grow</h3>
+                        <p class="text-sm text-[#6b5b4e] leading-relaxed">Access trusted resources and chat with our AI for instant pet care guidance anytime you need it.</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <a href="login/login.html" class="inline-block bg-[#5d7a49] text-white px-10 py-4 rounded-2xl font-bold shadow-lg hover:bg-[#4a633a] transition transform hover:-translate-y-1">
+                        Ready to start? Login now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR MODAL -->
+    <script>
+      function openHowItWorks() {
+          const modal = document.getElementById('howItWorksModal');
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      }
+
+      function closeHowItWorks() {
+          const modal = document.getElementById('howItWorksModal');
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = 'auto'; // Re-enable scrolling
+      }
+
+      // Close modal when clicking on the dark backdrop
+      window.onclick = function(event) {
+          const modal = document.getElementById('howItWorksModal');
+          if (event.target == modal) {
+              closeHowItWorks();
+          }
+      }
+    </script>
+  </body>
+</html>

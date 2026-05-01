@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare Audit Logs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    @keyframes drift {
+      0% { transform: translateX(0px); }
+      50% { transform: translateX(12px); }
+      100% { transform: translateX(0px); }
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f7f4e8;
+      color: #4b3428;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .paper {
+      position: relative;
+      background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
+    .floaty { animation: floaty 4s ease-in-out infinite; }
+    .drift { animation: drift 8s ease-in-out infinite; }
+
+    .card-hover {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12);
+    }
+
+    .nav-link {
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: #f1d6ad;
+    }
+  </style>
+</head>
+
+<body class="paper overflow-x-hidden">
+  <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/60 blur-[1px]"></div>
+  <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/60 blur-[1px]"></div>
+  <div class="absolute left-[8%] top-[12%] text-3xl opacity-25 floaty">🐾</div>
+  <div class="absolute right-[12%] top-[20%] text-2xl opacity-25 drift">🐾</div>
+  <div class="absolute left-[14%] bottom-[18%] text-2xl opacity-20 drift">🐾</div>
+  <div class="absolute right-[8%] bottom-[10%] text-3xl opacity-20 floaty">🐾</div>
+
+  <div class="relative flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="hidden w-72 flex-col border-r border-[#4b3428]/10 bg-white/65 p-6 backdrop-blur lg:flex">
+      <div class="flex items-center gap-3">
+        <div class="flex h-14 w-14 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">⚙️</div>
+        <div>
+          <div class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">PawCare</div>
+          <div class="text-2xl font-black">Admin</div>
+        </div>
+      </div>
+
+      <nav class="mt-10 space-y-3">
+        <a href="dashboard-admin.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
+          🏠 Dashboard
+        </a>
+        <a href="manage-users.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
+          👥 Manage Users
+        </a>
+        <a href="audit-logs.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">
+          📝 Audit Logs
+        </a>
+        <a href="system-settings.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
+          ⚙️ System Settings
+        </a>
+        <a href="backup-recovery.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
+          💾 Backup & Recovery
+        </a>
+      </nav>
+
+      <div class="mt-auto rounded-[28px] bg-[#f7f1df] p-5 shadow-inner">
+        <div class="text-sm text-[#7a6a5a]">Audit Trail</div>
+        <div class="mt-2 text-lg font-black">Track important actions</div>
+        <p class="mt-2 text-sm leading-6 text-[#6b5b4e]">
+          Monitor role changes, account updates, and system activity.
+        </p>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 px-6 py-6 md:px-8 lg:px-10">
+      <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Admin Panel</p>
+          <h1 class="mt-2 text-4xl font-black md:text-5xl">Audit Logs</h1>
+          <p class="mt-3 max-w-2xl text-base leading-7 text-[#6b5b4e] md:text-lg">
+            View recorded system actions and admin changes.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button onclick="clearLogs()" class="rounded-2xl bg-[#e7c0b8] px-5 py-3 font-semibold shadow-sm">
+            Clear Logs
+          </button>
+          <a href="#" onclick="logout()" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-5 py-3 font-semibold shadow-sm">
+            Log out
+          </a>
+        </div>
+      </header>
+
+      <!-- MOBILE NAV -->
+      <div class="mb-6 flex gap-2 overflow-x-auto lg:hidden">
+        <a href="dashboard-admin.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🏠 Dashboard</a>
+        <a href="manage-users.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">👥 Users</a>
+        <a href="audit-logs.html" class="whitespace-nowrap rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white shadow-sm">📝 Logs</a>
+        <a href="system-settings.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">⚙️ Settings</a>
+        <a href="backup-recovery.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">💾 Backup</a>
+      </div>
+
+      <!-- SUMMARY -->
+      <section class="mb-8 grid gap-5 md:grid-cols-3">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+          <div class="text-sm text-[#7a6a5a]">Total Logs</div>
+          <div id="totalLogs" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">Recorded admin activities</div>
+        </div>
+
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+          <div class="text-sm text-[#7a6a5a]">Role Updates</div>
+          <div id="roleLogs" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">User role modifications</div>
+        </div>
+
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+          <div class="text-sm text-[#7a6a5a]">Latest Action</div>
+          <div id="latestAction" class="mt-2 text-2xl font-black text-[#5d7a49]">None</div>
+          <div class="mt-2 text-sm text-[#6b5b4e]">Most recent activity</div>
+        </div>
+      </section>
+
+      <!-- LOG LIST -->
+      <section class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">Activity History</p>
+            <h2 class="mt-2 text-3xl font-black">System Logs</h2>
+          </div>
+
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search logs..."
+            oninput="renderLogs()"
+            class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 outline-none transition focus:border-[#5d7a49] md:w-80"
+          />
+        </div>
+
+        <div id="logsList" class="space-y-4"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser || currentUser.role !== "admin") {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+
+    function getLogs() {
+      return JSON.parse(localStorage.getItem("auditLogs")) || [];
+    }
+
+    function ensureSampleLogs() {
+      const logs = getLogs();
+
+      if (logs.length === 0) {
+        const sampleLogs = [
+          {
+            action: "Admin Login",
+            details: "Admin accessed the dashboard.",
+            date: new Date().toLocaleString()
+          },
+          {
+            action: "System Ready",
+            details: "PawCare admin panel initialized.",
+            date: new Date().toLocaleString()
+          }
+        ];
+
+        localStorage.setItem("auditLogs", JSON.stringify(sampleLogs));
+      }
+    }
+
+    function updateStats() {
+      const logs = getLogs();
+
+      document.getElementById("totalLogs").textContent = logs.length;
+      document.getElementById("roleLogs").textContent = logs.filter(log => log.action === "Role Updated").length;
+      document.getElementById("latestAction").textContent = logs.length > 0 ? logs[0].action : "None";
+    }
+
+    function renderLogs() {
+      const logsList = document.getElementById("logsList");
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const logs = getLogs();
+
+      const filteredLogs = logs.filter(log =>
+        log.action.toLowerCase().includes(searchValue) ||
+        log.details.toLowerCase().includes(searchValue) ||
+        log.date.toLowerCase().includes(searchValue)
+      );
+
+      if (filteredLogs.length === 0) {
+        logsList.innerHTML = `
+          <div class="rounded-[24px] bg-[#f8f3e8] p-5 text-sm text-[#6b5b4e]">
+            No logs found.
+          </div>
+        `;
+        return;
+      }
+
+      logsList.innerHTML = filteredLogs.map((log) => `
+        <div class="rounded-[26px] bg-[#f8f3e8] p-5 shadow-sm">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <div class="text-xl font-black">${log.action}</div>
+              <div class="mt-2 text-sm leading-6 text-[#6b5b4e]">${log.details}</div>
+            </div>
+
+            <div class="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-[#6b5b4e]">
+              ${log.date}
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function clearLogs() {
+      const confirmClear = confirm("Are you sure you want to clear all audit logs?");
+
+      if (!confirmClear) return;
+
+      localStorage.removeItem("auditLogs");
+      ensureSampleLogs();
+      updateStats();
+      renderLogs();
+
+      alert("Audit logs cleared.");
+    }
+
+    ensureSampleLogs();
+    updateStats();
+    renderLogs();
+  </script>
+</body>
+</html>

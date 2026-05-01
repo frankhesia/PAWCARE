@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare | All Pet Records</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f7f4e8; color: #4b3428; font-family: sans-serif; }
+    .paper { background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px); background-size: 22px 22px; }
+  </style>
+</head>
+<body class="paper p-6 md:p-10">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+      <div>
+        <a href="dashboard-admin.html" class="text-sm font-bold text-[#5d7a49] uppercase tracking-widest hover:underline">← Back to Dashboard</a>
+        <h1 class="text-4xl font-black mt-2">All Pet Records 🐶🐱</h1>
+        <p class="text-[#6b5b4e]">Viewing every pet registered in the PawCare system.</p>
+      </div>
+      <input id="petSearch" type="text" placeholder="Search pet or owner..." oninput="renderPets()" class="w-full md:w-80 p-4 rounded-2xl border border-[#4b3428]/10 outline-none focus:ring-2 ring-[#5d7a49]">
+    </header>
+
+    <!-- Pets Table/List -->
+    <div id="petsList" class="grid gap-4">
+      <p class="text-center py-10 italic text-gray-500">Loading pet database...</p>
+    </div>
+  </div>
+
+  <script>
+    let allPets = [];
+
+    async function fetchAllPets() {
+      try {
+        // This calls your existing getPets controller which has .populate("ownerId")
+        const res = await fetch("http://localhost:5001/api/pets");
+        allPets = await res.json();
+        renderPets();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("petsList").innerHTML = "Failed to load pets.";
+      }
+    }
+
+    function renderPets() {
+      const container = document.getElementById("petsList");
+      const search = document.getElementById("petSearch").value.toLowerCase();
+
+      const filtered = allPets.filter(p => 
+        p.name.toLowerCase().includes(search) || 
+        (p.ownerId && p.ownerId.name.toLowerCase().includes(search))
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-white p-10 rounded-[32px] text-center shadow-sm">No pets found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(pet => `
+        <div class="bg-white/80 p-6 rounded-[32px] border border-[#4b3428]/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-[#f1d6ad] rounded-2xl flex items-center justify-center text-3xl">
+              ${pet.type === 'Dog' ? '🐶' : '🐱'}
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-[#4b3428]">${pet.name}</h3>
+              <p class="text-sm text-[#7c8a5a] font-bold uppercase tracking-tight">${pet.breed}</p>
+            </div>
+          </div>
+
+          <div class="bg-[#f8f3e8] px-6 py-3 rounded-2xl border border-[#4b3428]/5">
+            <p class="text-[10px] font-bold text-[#7c8a5a] uppercase">Owner</p>
+            <p class="font-black text-[#4b3428]">${pet.ownerId ? pet.ownerId.name : 'Unknown Owner'}</p>
+            <p class="text-xs text-[#6b5b4e]">${pet.ownerId ? pet.ownerId.email : ''}</p>
+          </div>
+
+          <div class="flex gap-2">
+             <div class="px-4 py-2 bg-white rounded-xl text-xs font-bold border border-gray-100">
+                Weight: ${pet.weight || '?'}kg
+             </div>
+             <div class="px-4 py-2 bg-white rounded-xl text-xs font-bold border border-gray-100">
+                Status: ${pet.vaccinationStatus || 'N/A'}
+             </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    fetchAllPets();
+  </script>
+</body>
+</html>

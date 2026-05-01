@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PawCare Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes floaty {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(2deg); }
+      }
+
+      @keyframes drift {
+        0% { transform: translateX(0px); }
+        50% { transform: translateX(12px); }
+        100% { transform: translateX(0px); }
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #f7f4e8;
+        color: #4b3428;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .paper {
+        position: relative;
+        background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+        background-size: 22px 22px;
+      }
+
+      .floaty { animation: floaty 4s ease-in-out infinite; }
+      .drift { animation: drift 8s ease-in-out infinite; }
+
+      .card-hover {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12);
+      }
+
+      .nav-link {
+        transition: all 0.2s ease;
+      }
+
+      .nav-link:hover {
+        background: #f1d6ad;
+      }
+
+      .section {
+        display: none;
+      }
+
+      .section.active {
+        display: block;
+      }
+
+      .feature-btn {
+        transition: all 0.2s ease;
+      }
+
+      .feature-btn:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body class="paper overflow-x-hidden">
+    <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/60 blur-[1px]"></div>
+    <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/60 blur-[1px]"></div>
+    <div class="absolute left-[8%] top-[12%] text-3xl opacity-25 floaty">🐾</div>
+    <div class="absolute right-[12%] top-[20%] text-2xl opacity-25 drift">🐾</div>
+    <div class="absolute left-[14%] bottom-[18%] text-2xl opacity-20 drift">🐾</div>
+    <div class="absolute right-[8%] bottom-[10%] text-3xl opacity-20 floaty">🐾</div>
+
+    <div class="relative flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="hidden w-72 flex-col border-r border-[#4b3428]/10 bg-white/65 p-6 backdrop-blur lg:flex">
+        <div class="flex items-center gap-3">
+          <div class="flex h-14 w-14 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">🐾</div>
+          <div>
+            <div class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">PawCare</div>
+            <div class="text-2xl font-black">Dashboard</div>
+          </div>
+        </div>
+
+        <nav class="mt-10 space-y-3">
+          <button data-target="overview" onclick="showSection('overview')" class="nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-semibold text-left">
+            🏠 Overview
+          </button>
+          <button data-target="pets" onclick="showSection('pets')" class="nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-semibold text-left">
+            🐶 My Pets
+          </button>
+          <button data-target="calendar" onclick="showSection('calendar')" class="nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-semibold text-left">
+            📅 Calendar
+          </button>
+          <button data-target="resources" onclick="showSection('resources')" class="nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-semibold text-left">
+            📚 Resources
+          </button>
+          <button data-target="chat" onclick="showSection('chat')" class="nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-semibold text-left">
+            💬 AI Assistant
+          </button>
+        </nav>
+
+        <div class="mt-auto rounded-[28px] bg-[#f7f1df] p-5 shadow-inner">
+          <div class="text-sm text-[#7a6a5a]">Today’s tip</div>
+          <div class="mt-2 text-lg font-black">Stick to a healthy routine</div>
+          <p class="mt-2 text-sm leading-6 text-[#6b5b4e]">
+            Consistent meals, walks, and grooming help pets feel secure and stay healthy.
+          </p>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="flex-1 px-6 py-6 md:px-8 lg:px-10">
+        <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Welcome back</p>
+            <h1 id="welcomeName" class="mt-2 text-4xl font-black md:text-5xl">Hello 👋</h1>
+            <p class="mt-3 max-w-2xl text-base leading-7 text-[#6b5b4e] md:text-lg">
+              Manage your pet care, reminders, appointments, and resources in one calm and easy-to-use dashboard.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <a href="#" onclick="logout()" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-5 py-3 font-semibold shadow-sm">Log out</a>
+          </div>
+        </header>
+
+        <!-- Mobile Navigation -->
+        <div class="mb-6 flex gap-2 overflow-x-auto lg:hidden">
+          <button onclick="showSection('overview')" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🏠 Overview</button>
+          <button onclick="showSection('pets')" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">🐶 Pets</button>
+          <button onclick="showSection('calendar')" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">📅 Calendar</button>
+          <button onclick="showSection('resources')" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">📚 Resources</button>
+          <button onclick="showSection('chat')" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">💬 AI</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section id="overview" class="section active">
+          <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+            <div class="text-sm text-[#7a6a5a]">Registered pets</div>
+            <div id="petCount" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
+            <div id="petCountText" class="mt-2 text-sm text-[#6b5b4e]">No pets added yet</div>
+            <button onclick="showSection('pets')" class="feature-btn mt-4 rounded-2xl bg-[#5d7a49] px-4 py-2 text-sm font-semibold text-white">
+              View Pets
+            </button>
+          </div>
+
+          <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+            <div class="text-sm text-[#7a6a5a]">Upcoming reminders</div>
+            <div id="reminderCount" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
+            <div id="reminderText" class="mt-2 text-sm text-[#6b5b4e]">No reminders yet</div>
+            <button onclick="showSection('calendar')" class="feature-btn mt-4 rounded-2xl bg-[#f1d6ad] px-4 py-2 text-sm font-semibold">
+              See Reminders
+            </button>
+          </div>
+
+          <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+            <div class="text-sm text-[#7a6a5a]">Next appointment</div>
+            <div id="nextAppointmentTitle" class="mt-2 text-2xl font-black text-[#5d7a49]">None</div>
+            <div id="nextAppointmentDate" class="mt-2 text-sm text-[#6b5b4e]">No appointment scheduled</div>
+            <button onclick="showSection('calendar')" class="feature-btn mt-4 rounded-2xl bg-[#f1d6ad] px-4 py-2 text-sm font-semibold">
+              Open Calendar
+            </button>
+          </div>
+
+          <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+            <div class="text-sm text-[#7a6a5a]">AI suggestions</div>
+            <div id="aiSuggestionCount" class="mt-2 text-2xl font-black text-[#5d7a49]">0</div>
+            <div id="aiSuggestionText" class="mt-2 text-sm text-[#6b5b4e]">No suggestions yet</div>
+            <button onclick="showSection('chat')" class="feature-btn mt-4 rounded-2xl bg-[#5d7a49] px-4 py-2 text-sm font-semibold text-white">
+              Ask AI
+            </button>
+          </div>
+        </section>
+
+        <section class="mt-8">
+          <div id="overviewPetsContainer"></div>
+        </section>
+        </section>
+
+       <!-- PETS -->
+        <section id="pets" class="section">
+          <section class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+            <div class="mb-6 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">My Pets</p>
+                <h2 class="mt-2 text-3xl font-black">Pet Profiles</h2>
+              </div>
+
+              <a href="add-pet.html" class="rounded-2xl bg-[#f1d6ad] px-4 py-2 font-semibold">
+                Add Pet
+              </a>
+            </div>
+
+            <div id="petsContainer" class="grid gap-5 md:grid-cols-2"></div>
+          </section>
+        </section>
+
+        <!-- CALENDAR -->
+        <section id="calendar" class="section">
+          <section class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+            <div class="mb-6 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">Planner</p>
+                <h2 class="mt-2 text-3xl font-black">Upcoming Schedule</h2>
+              </div>
+              <a href="calendar.html" class="feature-btn rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white inline-block"> + Add Event</a>
+            </div>
+            <div id="scheduleContainer" class="space-y-4">
+              <p class="text-[#6b5b4e]">No schedules found.</p>
+            </div>
+          </section>
+        </section>
+
+        <!-- RESOURCES -->
+       <!-- RESOURCES SECTION -->
+<section id="resources" class="section">
+  <section class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+    <!-- Locate the Resources Header and replace the button -->
+<div class="mb-5 flex items-center justify-between">
+  <div>
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">Learn</p>
+    <h2 class="mt-2 text-3xl font-black">Resources</h2>
+  </div>
+ <!-- ADD THIS BUTTON HERE -->
+  <button onclick="openSuggestModal()" class="feature-btn rounded-2xl bg-[#f1d6ad] px-4 py-2 font-semibold">Suggest Resource</button>
+</div>
+
+    <!-- This container will hold the approved resources -->
+    <div id="resourcesContainer" class="space-y-4 text-sm">
+      <p class="text-[#6b5b4e]">Loading helpful resources...</p>
+    </div>
+  </section>
+</section>
+
+        <!-- AI CHAT -->
+        <section id="chat" class="section">
+          <section class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+            <div class="mb-5">
+              <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">Assistant</p>
+              <h2 class="mt-2 text-3xl font-black">🐾 PawCare AI</h2>
+            </div>
+
+            <div class="space-y-4">
+              <div class="rounded-[24px] bg-[#f5efdc] p-4 text-sm leading-7">
+                Ask anything about your pet — food, health, behavior, grooming.
+              </div>
+
+              <!-- PET SELECTOR DROPDOWN -->
+              <div class="mb-3">
+                <label class="text-xs font-bold uppercase tracking-wider text-[#7c8a5a] block mb-1 ml-2">Select pet for medical context:</label>
+                <select id="petSelector" class="w-full rounded-[24px] border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 outline-none">
+                  <option value="">General inquiry (No history)</option>
+                </select>
+              </div>
+
+              <!-- INPUT -->
+              <input 
+                id="chatInput"
+                type="text"
+                placeholder="Ask something about your pet..."
+                class="w-full rounded-[24px] border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3 outline-none"
+              />
+
+              <!-- BUTTON -->
+              <div class="flex flex-wrap gap-3">
+                <button onclick="sendMessage()" 
+                  class="feature-btn rounded-2xl bg-[#5d7a49] px-5 py-3 font-semibold text-white shadow-lg">
+                  Ask PawCare AI
+                </button>
+              </div>
+
+              <!-- RESPONSE -->
+              <div class="rounded-[24px] bg-[#f8f3e8] p-4 text-sm leading-7">
+                <strong>AI Assistant:</strong>
+                <div id="chatReply" class="mt-2 text-[#6b5b4e]">
+                  Your AI answer will appear here...
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <!-- EDIT PET MODAL (Popup Form) -->
+    <!-- EDIT PET MODAL -->
+<div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-3xl rounded-[32px] bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-black text-[#4b3428]">Update Pet Profile 🐾</h2>
+      <button onclick="closeEditModal()" class="text-2xl hover:text-red-500 transition">✕</button>
+    </div>
+    
+    <form id="editPetForm" class="space-y-6">
+      <input type="hidden" id="editPetId">
+      
+      <!-- Basic Info Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Pet Name</label>
+          <input type="text" id="editName" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Breed</label>
+          <input type="text" id="editBreed" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Sex</label>
+          <select id="editSex" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Weight (kg)</label>
+          <input type="number" step="0.1" id="editWeight" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Vaccination Status</label>
+          <select id="editVaccination" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+            <option value="Up to date">Up to date</option>
+            <option value="Needs update">Needs update</option>
+            <option value="Not vaccinated">Not vaccinated</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Last Vet Visit</label>
+          <input type="date" id="editLastVet" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+        </div>
+      </div>
+
+      <!-- Lifestyle Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Food / Diet</label>
+          <input type="text" id="editFood" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Activity Level</label>
+          <select id="editActivity" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none">
+            <option value="Low">Low</option>
+            <option value="Normal">Normal</option>
+            <option value="Moderate">Moderate</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Medical Notes</label>
+        <textarea id="editNotes" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none h-20 resize-none"></textarea>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Behavioral Notes</label>
+        <textarea id="editBehavior" class="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 outline-none h-20 resize-none"></textarea>
+      </div>
+
+      <button type="button" onclick="savePetEdit()" class="w-full rounded-2xl bg-[#5d7a49] py-4 font-bold text-white shadow-lg hover:bg-[#4a633a] transition-all transform hover:-translate-y-1">
+        Save Changes 🐾
+      </button>
+    </form>
+  </div>
+</div>
+
+<div id="detailsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="w-full max-w-2xl rounded-[32px] bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-black text-[#4b3428]">Pet Details 🐾</h2>
+        <button onclick="closeDetailsModal()" class="text-2xl hover:text-red-500">✕</button>
+      </div>
+      
+      <div id="detailsContent" class="space-y-6">
+        <!-- Data will be injected here by JavaScript -->
+      </div>
+
+      <button onclick="closeDetailsModal()" class="mt-8 w-full rounded-2xl bg-[#f1d6ad] py-4 font-bold text-[#4b3428]">
+        Close Details
+      </button>
+    </div>
+  </div>
+
+
+   <script>
+  // 1. GLOBAL DATA STORAGE
+  let allMyPets = []; 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+  if (!currentUser) {
+    window.location.href = "../login/login.html";
+  }
+
+  function isMine(item) {
+    if (!item.ownerId) return false;
+    const ownerId = typeof item.ownerId === "string" ? item.ownerId : item.ownerId._id;
+    return ownerId === currentUser._id;
+  }
+
+  // 2. NAVIGATION LOGIC
+  function showSection(sectionId) {
+    document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) targetSection.classList.add("active");
+
+    document.querySelectorAll(".nav-link").forEach(link => {
+      link.classList.remove("bg-[#5d7a49]", "text-white", "shadow-sm");
+      link.classList.add("bg-white/80");
+    });
+
+    const activeLink = document.querySelector(`[data-target="${sectionId}"]`);
+    if (activeLink) {
+      activeLink.classList.remove("bg-white/80");
+      activeLink.classList.add("bg-[#5d7a49]", "text-white", "shadow-sm");
+    }
+  }
+
+  // 3. EDIT MODAL LOGIC (Corrected to fill ALL fields)
+  function handleEditClick(petId) {
+    const pet = allMyPets.find(p => p._id === petId);
+    if (!pet) return;
+
+    // Set all modal fields based on the pet object
+    document.getElementById("editPetId").value = pet._id;
+    document.getElementById("editName").value = pet.name || "";
+    document.getElementById("editBreed").value = pet.breed || "";
+    document.getElementById("editSex").value = pet.sex || "Male";
+    document.getElementById("editWeight").value = pet.weight || "";
+    document.getElementById("editVaccination").value = pet.vaccinationStatus || "Up to date";
+    document.getElementById("editFood").value = pet.food || "";
+    document.getElementById("editActivity").value = pet.activityLevel || "Normal";
+    document.getElementById("editNotes").value = pet.notes || "";
+    document.getElementById("editBehavior").value = pet.behaviorNotes || "";
+
+    // Handle Date formatting for the input field (YYYY-MM-DD)
+    if (pet.lastVetVisit) {
+      document.getElementById("editLastVet").value = pet.lastVetVisit.split('T')[0];
+    } else {
+      document.getElementById("editLastVet").value = "";
+    }
+
+    const modal = document.getElementById("editModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  function closeEditModal() {
+    document.getElementById("editModal").classList.add("hidden");
+    document.getElementById("editModal").classList.remove("flex");
+  }
+
+  // 4. SAVE CHANGES (Corrected to send ALL fields to the backend)
+  async function savePetEdit() {
+    const id = document.getElementById("editPetId").value;
+    
+    const updatedData = {
+      name: document.getElementById("editName").value,
+      breed: document.getElementById("editBreed").value,
+      sex: document.getElementById("editSex").value,
+      weight: document.getElementById("editWeight").value,
+      vaccinationStatus: document.getElementById("editVaccination").value,
+      lastVetVisit: document.getElementById("editLastVet").value,
+      food: document.getElementById("editFood").value,
+      activityLevel: document.getElementById("editActivity").value,
+      notes: document.getElementById("editNotes").value,
+      behaviorNotes: document.getElementById("editBehavior").value
+    };
+
+    try {
+      const res = await fetch(`http://localhost:5001/api/pets/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (res.ok) {
+        alert("Pet profile updated!");
+        closeEditModal();
+        loadPets(); // Refresh the list
+      } else {
+        alert("Error updating pet profile.");
+      }
+    } catch (error) {
+      console.error("Update Error:", error);
+    }
+  }
+
+  // 5. DATA LOADING
+  async function loadPets() {
+    const petsContainer = document.getElementById("petsContainer");
+    const overviewPetsContainer = document.getElementById("overviewPetsContainer");
+    const petSelector = document.getElementById("petSelector");
+
+    try {
+      const res = await fetch("http://localhost:5001/api/pets");
+      const pets = await res.json();
+      allMyPets = pets.filter(isMine);
+
+      document.getElementById("petCount").textContent = allMyPets.length;
+      document.getElementById("petCountText").textContent =
+        allMyPets.length === 0 ? "No pets added yet" : `${allMyPets.length} pet(s) registered`;
+
+      petSelector.innerHTML = '<option value="">General inquiry (No history)</option>';
+      allMyPets.forEach(pet => {
+          const option = document.createElement("option");
+          option.value = pet._id;
+          option.textContent = pet.name;
+          petSelector.appendChild(option);
+      });
+
+      if (allMyPets.length === 0) {
+        petsContainer.innerHTML = `<p class="p-10 text-center">No pets found.</p>`;
+        return;
+      }
+
+      const petCards = allMyPets.map(pet => `
+  <div class="rounded-[28px] bg-[#f8f3e8] p-5 shadow-sm relative card-hover">
+    <!-- Action Buttons Group -->
+    <div class="absolute top-4 right-4 z-50 flex gap-2">
+      <button onclick="handleEditClick('${pet._id}')" class="text-xs font-bold text-[#5d7a49] bg-white/90 p-2 px-3 rounded-xl border border-[#5d7a49]/20 hover:bg-[#5d7a49] hover:text-white transition shadow-sm">
+        ✏️ Edit
+      </button>
+      <button onclick="confirmDelete('${pet._id}', '${pet.name}')" class="text-xs font-bold text-red-600 bg-white/90 p-2 px-3 rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition shadow-sm">
+        🗑️ Delete
+      </button>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl">
+        ${pet.type === "Dog" ? "🐶" : "🐱"}
+      </div>
+      <div>
+        <div class="text-2xl font-black">${pet.name}</div>
+        <div class="text-sm text-[#6b5b4e]">${pet.breed || "Unknown Breed"}</div>
+      </div>
+    </div>
+
+    <div class="mt-5 space-y-3">
+      <div class="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm">
+        <span class="text-[#7c8a5a] font-semibold">Status</span>
+        <span class="font-bold">${pet.vaccinationStatus || "N/A"}</span>
+      </div>
+      
+      <!-- FULL DETAILS BUTTON -->
+      <button onclick="showFullDetails('${pet._id}')" class="w-full rounded-2xl bg-[#5d7a49]/10 py-3 text-sm font-bold text-[#5d7a49] hover:bg-[#5d7a49] hover:text-white transition">
+        📄 View Full Details
+      </button>
+    </div>
+  </div>
+`).join("");
+
+      petsContainer.innerHTML = petCards;
+      overviewPetsContainer.innerHTML = `<div class="grid gap-5 md:grid-cols-2">${petCards}</div>`;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadSchedules() {
+    const container = document.getElementById("scheduleContainer");
+    try {
+      const res = await fetch("http://localhost:5001/api/calendar");
+      const schedules = await res.json();
+      const mySchedules = schedules.filter(isMine);
+
+      document.getElementById("reminderCount").textContent = mySchedules.length;
+      document.getElementById("reminderText").textContent =
+        mySchedules.length === 0 ? "No reminders yet" : `${mySchedules.length} reminder(s) scheduled`;
+
+      if (mySchedules.length === 0) {
+        container.innerHTML = `<p class="text-[#6b5b4e]">No schedules found.</p>`;
+        return;
+      }
+
+      container.innerHTML = mySchedules.map(s => `
+        <div class="rounded-[28px] bg-[#f8f3e8] p-5 shadow-sm mb-3">
+          <div class="font-black">${s.title}</div>
+          <div class="text-sm text-[#6b5b4e]">${new Date(s.date).toLocaleString()}</div>
+        </div>
+      `).join("");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function sendMessage() {
+    const messageInput = document.getElementById("chatInput");
+    const message = messageInput.value;
+    const petId = document.getElementById("petSelector").value; 
+    const chatReply = document.getElementById("chatReply");
+
+    if (!message.trim()) {
+      chatReply.innerText = "Please type a question.";
+      return;
+    }
+
+    chatReply.innerText = "Thinking...";
+
+    try {
+      const res = await fetch("http://localhost:5001/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, petId })
+      });
+
+      const data = await res.json();
+      chatReply.innerHTML = data.reply ? data.reply.replace(/\n/g, '<br>') : "No response.";
+    } catch (error) {
+      chatReply.innerText = "AI Error.";
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "../PAWCARE2026.html";
+  }
+
+// --- NEW: VIEW DETAILS LOGIC ---
+  function showFullDetails(petId) {
+    const pet = allMyPets.find(p => p._id === petId);
+    if (!pet) return;
+
+    const content = document.getElementById("detailsContent");
+    content.innerHTML = `
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-gray-50 p-4 rounded-2xl">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Species</p>
+          <p class="text-lg font-black">${pet.type}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Sex</p>
+          <p class="text-lg font-black">${pet.sex || 'N/A'}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Weight</p>
+          <p class="text-lg font-black">${pet.weight ? pet.weight + ' kg' : 'N/A'}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Vaccination</p>
+          <p class="text-lg font-black">${pet.vaccinationStatus || 'N/A'}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl col-span-2">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Diet / Food</p>
+          <p class="text-lg font-black">${pet.food || 'No diet specified'}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl col-span-2">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Medical Notes</p>
+          <p class="text-sm text-[#4b3428] mt-1">${pet.notes || 'No medical records found.'}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-2xl col-span-2">
+          <p class="text-xs font-bold text-[#7c8a5a] uppercase">Behavioral Notes</p>
+          <p class="text-sm text-[#4b3428] mt-1">${pet.behaviorNotes || 'No behavioral notes.'}</p>
+        </div>
+      </div>
+    `;
+
+    const modal = document.getElementById("detailsModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  function closeDetailsModal() {
+    document.getElementById("detailsModal").classList.add("hidden");
+    document.getElementById("detailsModal").classList.remove("flex");
+  }
+
+  // --- NEW: DELETE LOGIC ---
+  async function confirmDelete(petId, petName) {
+    if (confirm(`Are you sure you want to delete ${petName}? This cannot be undone.`)) {
+      try {
+        const res = await fetch(`http://localhost:5001/api/pets/${petId}`, {
+          method: "DELETE"
+        });
+
+        if (res.ok) {
+          alert("Pet profile removed.");
+          loadPets(); // Refresh the list
+        } else {
+          alert("Failed to delete pet.");
+        }
+      } catch (error) {
+        console.error("Delete Error:", error);
+        alert("Server error during deletion.");
+      }
+    }
+  }
+// --- RESOURCE LOGIC ---
+async function handleResourceSubmit() {
+  const title = prompt("Enter Resource Title:");
+  const content = prompt("Enter Resource Content (Tip/Article):");
+  
+  if(!title || !content) return; // Don't send if empty
+
+  const body = {
+    title,
+    content,
+    category: "Owner Suggestion",
+    publishedBy: currentUser.name || "A Pet Owner",
+    role: "owner" // This tells the backend to save as 'pending'
+  };
+
+  try {
+    const res = await fetch("http://localhost:5001/api/resources", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      alert("Submission successful! It will appear here once approved by a moderator.");
+    }
+  } catch (err) {
+    alert("Error submitting resource.");
+  }
+}
+
+async function loadResources() {
+  try {
+    const res = await fetch("http://localhost:5001/api/resources?status=approved");
+    const data = await res.json();
+    const container = document.getElementById("resourcesContainer");
+
+    // Filter into two groups
+    const featured = data.filter(r => r.isFeatured);
+    const regular = data.filter(r => !r.isFeatured);
+
+    let html = "";
+
+    // Add Featured Section first
+    if (featured.length > 0) {
+      html += `<div class="col-span-full mb-4"><p class="text-xs font-bold text-[#e1b453] uppercase tracking-widest">⭐ Editor's Picks</p></div>`;
+      html += featured.map(r => `
+        <div class="col-span-full bg-white border-2 border-[#e1b453] p-6 rounded-[32px] shadow-md mb-6">
+          <h4 class="text-2xl font-black text-[#4b3428]">${r.title}</h4>
+          <p class="text-[#6b5b4e] mt-3">${r.content}</p>
+          <div class="mt-4 text-[10px] font-bold text-[#e1b453] uppercase">Trusted Advice • ${r.category}</div>
+        </div>
+      `).join("");
+    }
+
+    // Add Regular Section
+    html += `<div class="col-span-full mt-4 mb-4"><p class="text-xs font-bold text-[#7c8a5a] uppercase tracking-widest">All Resources</p></div>`;
+    html += regular.map(r => `
+      <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm relative">
+        <button onclick="flagThis('${r._id}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500">🚩</button>
+        <h4 class="font-black text-lg text-[#4b3428]">${r.title}</h4>
+        <p class="text-sm text-[#6b5b4e] mt-2">${r.content}</p>
+      </div>
+    `).join("");
+
+    container.innerHTML = html;
+  } catch (e) { console.error(e); }
+}
+// MODAL CONTROLS
+function openResourceModal() { document.getElementById("resourceModal").classList.remove("hidden"); document.getElementById("resourceModal").classList.add("flex"); }
+function closeResourceModal() { document.getElementById("resourceModal").classList.add("hidden"); document.getElementById("resourceModal").classList.remove("flex"); }
+
+// LOAD ONLY APPROVED
+async function loadResources() {
+  const container = document.getElementById("resourcesContainer");
+  try {
+    const res = await fetch("http://localhost:5001/api/resources?status=approved");
+    const data = await res.json();
+    if (data.length === 0) { container.innerHTML = `<p class="text-[#6b5b4e]">No approved resources yet.</p>`; return; }
+    container.innerHTML = data.map(r => `
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-[#4b3428]/5">
+        <span class="text-[10px] font-bold uppercase text-[#7c8a5a] bg-[#f1d6ad]/30 px-2 py-1 rounded-md">${r.category}</span>
+        <h4 class="font-black text-lg mt-2">${r.title}</h4>
+        <p class="text-sm text-[#6b5b4e] mt-2">${r.content}</p>
+        <p class="text-[10px] text-gray-400 mt-4 italic">By ${r.publishedBy} • Approved ✅</p>
+      </div>
+    `).join("");
+  } catch (err) { console.error(err); }
+}
+
+// SUBMIT PENDING
+async function submitResourceRequest() {
+  const title = document.getElementById("newResTitle").value;
+  const category = document.getElementById("newResCategory").value;
+  const content = document.getElementById("newResContent").value;
+  if (!title || !content) return alert("Please fill title and content");
+
+  await fetch("http://localhost:5001/api/resources", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, category, content, publishedBy: currentUser.name, role: "owner" })
+  });
+  alert("Submitted! It will appear once approved by a moderator.");
+  closeResourceModal();
+}
+function openSuggestModal() {
+  document.getElementById('resModal').classList.remove('hidden');
+  document.getElementById('resModal').classList.add('flex');
+}
+
+async function submitSuggestion() {
+  // Use the new unique IDs we just created
+  const title = document.getElementById('uniqueTitle').value.trim();
+  const content = document.getElementById('uniqueContent').value.trim();
+  const category = document.getElementById('newResCategory').value;
+
+  // Validation
+  if (!title || !content) {
+    alert("Please fill title and content");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5001/api/resources", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title,
+        content: content,
+        category: category,
+        publishedBy: currentUser.name,
+        role: "owner"
+      })
+    });
+
+    if (res.ok) {
+      alert("Submitted successfully! 🐾");
+      // Clear fields
+      document.getElementById('uniqueTitle').value = "";
+      document.getElementById('uniqueContent').value = "";
+      // Close modal
+      document.getElementById('resModal').classList.replace('flex', 'hidden');
+    } else {
+      alert("Failed to save to database.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Is your backend running?");
+  }
+}
+
+// Update loadResources to fetch ONLY approved
+async function loadResources() {
+  const container = document.getElementById("resourcesContainer");
+  const res = await fetch("http://localhost:5001/api/resources?status=approved");
+  const data = await res.json();
+  if(data.length === 0) { container.innerHTML = "No resources yet."; return; }
+  container.innerHTML = data.map(r => `
+    <div class="bg-white p-5 rounded-2xl border mb-3">
+      <h4 class="font-black text-lg">${r.title}</h4>
+      <p class="text-sm text-[#6b5b4e] mt-1">${r.content}</p>
+    </div>
+  `).join("");
+}
+// Add loadResources() to your existing window.onload!
+
+// Update your window.onload at the very bottom to include loadResources()
+window.onload = function () {
+    document.getElementById("welcomeName").textContent = `Hello, ${currentUser.name || "Owner"} 👋`;
+    showSection("overview");
+    loadPets();
+    loadSchedules();
+    loadResources(); // ADD THIS LINE
+};
+
+</script>
+<div id="resModal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg rounded-[32px] bg-white p-8 shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-black">Suggest Resource 🐾</h2>
+      <button onclick="closeSuggestModal()" class="text-2xl">✕</button>
+    </div>
+    <div class="space-y-4">
+      <input type="text" id="uniqueTitle" placeholder="Title" class="w-full rounded-2xl border bg-gray-50 p-3 outline-none">
+      <select id="newResCategory" class="w-full rounded-2xl border bg-gray-50 p-3 outline-none">
+        <option value="Health">Health</option>
+        <option value="Training">Training</option>
+        <option value="Nutrition">Nutrition</option>
+        <option value="General">General</option>
+      </select>
+      <textarea id="uniqueContent" placeholder="Content..." class="w-full h-32 rounded-2xl border bg-gray-50 p-3 outline-none resize-none"></textarea>
+      <button onclick="submitSuggestion()" class="w-full rounded-2xl bg-[#5d7a49] py-4 font-bold text-white shadow-lg">Submit for Approval</button>
+    </div>
+  </div>
+</div>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawCare - Add Pet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f7f4e8;
+      color: #4b3428;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .paper {
+      position: relative;
+      background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .floaty { animation: floaty 4s ease-in-out infinite; }
+    .pet-option.active {
+      border-color: #5d7a49;
+      background: #eef5e7;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(93, 122, 73, 0.12);
+    }
+    .modal-bg {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    input, select, textarea {
+      transition: all 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #5d7a49 !important;
+      box-shadow: 0 0 0 4px rgba(93, 122, 73, 0.12);
+      outline: none;
+    }
+  </style>
+</head>
+<body class="paper overflow-x-hidden">
+  <!-- Background Decorations -->
+  <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/60 blur-[1px]"></div>
+  <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/60 blur-[1px]"></div>
+
+  <div class="relative min-h-screen px-4 py-8 md:px-8 lg:px-10">
+    <div class="mx-auto max-w-5xl">
+      
+      <!-- Header -->
+      <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">PawCare</p>
+          <h1 class="mt-2 text-4xl font-black md:text-5xl">Add New Pet</h1>
+          <p class="mt-2 text-[#6b5b4e]">Complete profile details help the AI detect symptoms more accurately.</p>
+        </div>
+        <div class="flex gap-3">
+          <a href="dashboard-owner.html" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-5 py-3 font-semibold shadow-sm">← Back</a>
+          <button type="button" onclick="resetForm()" class="rounded-2xl bg-[#f1d6ad] px-5 py-3 font-semibold shadow-sm">Clear</button>
+        </div>
+      </div>
+
+      <form id="addPetForm" class="space-y-10">
+        <input type="hidden" id="petType" name="petType" required />
+
+        <!-- 1. Pet Type Selection -->
+        <section class="rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8 text-center">
+          <h2 class="text-2xl font-black mb-8">Choose Species</h2>
+          <div class="grid gap-4 sm:grid-cols-2 mx-auto max-w-2xl">
+            <button type="button" class="pet-option rounded-[28px] border border-[#4b3428]/10 bg-[#f8f3e8] p-6 text-left" data-type="dog" onclick="selectPetType('dog')">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🐶</div>
+                <div><div class="text-xl font-black">Dog</div></div>
+              </div>
+            </button>
+            <button type="button" class="pet-option rounded-[28px] border border-[#4b3428]/10 bg-[#fff7ea] p-6 text-left" data-type="cat" onclick="selectPetType('cat')">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🐱</div>
+                <div><div class="text-xl font-black">Cat</div></div>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. Basic Physical Information -->
+        <section class="rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+          <h3 class="mb-6 text-2xl font-black">Physical Profile</h3>
+          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Pet Name *</label>
+              <input type="text" name="petName" placeholder="e.g. Rick" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" required />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Breed *</label>
+              <input type="text" name="breed" placeholder="e.g. Golden Retriever" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" required />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Sex *</label>
+              <select name="sex" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" required>
+                <option value="">Select sex</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Date of Birth</label>
+              <input type="date" name="dob" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Weight (kg)</label>
+              <input type="number" step="0.1" name="weight" placeholder="e.g. 15.5" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Color</label>
+              <input type="text" name="color" placeholder="e.g. Golden" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Neutered / Spayed?</label>
+              <select name="neutered" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3">
+                <option value="Unknown">Unknown</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Microchip ID</label>
+              <input type="text" name="microchipId" placeholder="ID Number" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Medical History -->
+        <section class="rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+          <h3 class="mb-6 text-2xl font-black">Health Records</h3>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Vaccination Status</label>
+              <select name="vaccinationStatus" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3">
+                <option value="Not Specified">Select status</option>
+                <option value="Up to date">Up to date</option>
+                <option value="Needs update">Needs update</option>
+                <option value="Not vaccinated">Not vaccinated</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Last Vet Visit</label>
+              <input type="date" name="lastVetVisit" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Vet / Clinic Name</label>
+              <input type="text" name="vetName" placeholder="Dr. Name or Clinic" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="mb-2 block text-sm font-semibold">Medical Notes (Allergies, Surgeries, Conditions)</label>
+              <textarea name="medicalNotes" rows="3" placeholder="List details here for the AI to analyze..." class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Lifestyle & Routine -->
+        <section class="rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
+          <h3 class="mb-6 text-2xl font-black">Routine & Behavior</h3>
+          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Food Type</label>
+              <input type="text" name="food" placeholder="e.g. Dry Kibble" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Feeding Schedule</label>
+              <input type="text" name="feedingSchedule" placeholder="e.g. Twice Daily" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold">Activity Level</label>
+              <select name="activityLevel" class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3">
+                <option value="Normal">Normal</option>
+                <option value="Low">Low (Sedentary)</option>
+                <option value="Moderate">Moderate</option>
+                <option value="High">High (Athletic)</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <label class="mb-2 block text-sm font-semibold">Behavioral Notes</label>
+              <textarea name="behaviorNotes" rows="3" placeholder="e.g. Anxious around thunder, loves playing fetch..." class="w-full rounded-2xl border border-[#4b3428]/10 bg-[#fffdf8] px-4 py-3"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Submit Bar -->
+        <div class="flex flex-col gap-4 rounded-[28px] bg-[#5d7a49] p-6 text-white md:flex-row md:items-center md:justify-between shadow-xl">
+          <div>
+            <div class="text-xl font-black">Save Pet Information</div>
+            <p class="text-sm opacity-80">All details will be saved to your dashboard.</p>
+          </div>
+          <div class="flex gap-3">
+            <button type="submit" class="rounded-xl bg-[#e1b453] px-10 py-4 font-bold text-[#4b3428] shadow-lg">Save Profile 🐾</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser || !currentUser._id) {
+      window.location.href = "../login/login.html";
+    }
+
+    function selectPetType(type) {
+      document.getElementById("petType").value = type;
+      document.querySelectorAll(".pet-option").forEach(opt => opt.classList.remove("active"));
+      document.querySelector(`.pet-option[data-type="${type}"]`).classList.add("active");
+    }
+
+    function resetForm() {
+      document.getElementById("addPetForm").reset();
+      document.querySelectorAll(".pet-option").forEach(opt => opt.classList.remove("active"));
+      document.getElementById("petType").value = "";
+    }
+
+    document.getElementById("addPetForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const petType = document.getElementById("petType").value;
+
+      if (!petType) {
+        alert("Please select if your pet is a Dog or Cat.");
+        return;
+      }
+
+      // MATCHES YOUR Pet.js MODEL EXACTLY
+      const petData = {
+        ownerId: currentUser._id,
+        name: formData.get("petName"),
+        type: petType === "dog" ? "Dog" : "Cat",
+        breed: formData.get("breed"),
+        sex: formData.get("sex"),
+        dob: formData.get("dob"),
+        weight: formData.get("weight"),
+        color: formData.get("color"),
+        neutered: formData.get("neutered"),
+        microchipId: formData.get("microchipId"),
+        vaccinationStatus: formData.get("vaccinationStatus"),
+        lastVetVisit: formData.get("lastVetVisit"),
+        vetName: formData.get("vetName"),
+        notes: formData.get("medicalNotes"),
+        food: formData.get("food"),
+        feedingSchedule: formData.get("feedingSchedule"),
+        activityLevel: formData.get("activityLevel"),
+        behaviorNotes: formData.get("behaviorNotes")
+      };
+
+      try {
+        const res = await fetch("http://localhost:5001/api/pets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(petData)
+        });
+
+        if (res.ok) {
+          alert("Pet profile created successfully!");
+          window.location.href = "dashboard-owner.html";
+        } else {
+          const data = await res.json();
+          alert(data.error || "Failed to save pet.");
+        }
+      } catch (error) {
+        alert("Cannot connect to server. Ensure your backend is running.");
+      }
+    });
+  </script>
+</body>
+</html>
