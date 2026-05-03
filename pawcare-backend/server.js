@@ -24,6 +24,7 @@ app.use("/api/pets", petRoutes);
 app.use("/api/manage-users", userRoutes); 
 app.use("/api/calendar", scheduleRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/categories", require("./routes/categoryRoutes"));
 
 // 4. CONNECT TO DATABASE
 mongoose

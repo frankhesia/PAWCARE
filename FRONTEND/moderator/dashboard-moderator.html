@@ -61,10 +61,7 @@
            <div>
   <label class="text-xs font-bold uppercase tracking-widest text-[#7c8a5a] ml-1">Category</label>
   <select id="resCategory" class="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 ring-[#f1d6ad]">
-    <option value="Health">Health</option>
-    <option value="Training">Training</option>
-    <option value="Nutrition">Nutrition</option>
-    <option value="General">General</option>
+    
   </select>
 </div>
             <textarea id="resContent" placeholder="Resource Content..." class="w-full p-4 h-48 rounded-2xl border border-gray-100 bg-gray-50 outline-none resize-none focus:ring-2 ring-[#f1d6ad]"></textarea>
@@ -94,8 +91,9 @@
   </div>
 
   <script>
-    const API_URL = "http://localhost:5001/api/resources";
-    const user = JSON.parse(localStorage.getItem("currentUser"));
+   const API_BASE = "http://localhost:5001/api";
+const API_URL = `${API_BASE}/resources`;
+const user = JSON.parse(localStorage.getItem("currentUser"));
 
     // Security Check
     if (!user || user.role !== 'moderator') {
@@ -197,9 +195,39 @@
       window.location.href = "../PAWCARE2026.html";
     }
 
-    // Initialize
-    loadResources();
-    checkPendingCount();
+  async function populateCategories() {
+  try {
+   const res = await fetch(`${API_BASE}/categories`);
+    const categories = await res.json();
+
+    const dropdown = document.getElementById("resCategory");
+
+    if (!dropdown) return;
+
+    if (!Array.isArray(categories) || categories.length === 0) {
+      dropdown.innerHTML = `<option value="General">General</option>`;
+      return;
+    }
+
+    dropdown.innerHTML = categories.map(cat =>
+      `<option value="${cat.name}">${cat.name}</option>`
+    ).join("");
+
+  } catch (err) {
+    console.error("Error loading categories:", err);
+
+    const dropdown = document.getElementById("resCategory");
+    if (dropdown) {
+      dropdown.innerHTML = `<option value="General">General</option>`;
+    }
+  }
+}
+
+window.onload = () => {
+  loadResources();
+  checkPendingCount();
+  populateCategories();
+};
   </script>
 </body>
 </html>

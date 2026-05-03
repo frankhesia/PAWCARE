@@ -117,11 +117,7 @@
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-3">
-          <a href="#" onclick="logout()" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-5 py-3 font-semibold shadow-sm">
-            Log out
-          </a>
-        </div>
+    
       </header>
 
       <!-- MOBILE NAV -->
@@ -220,159 +216,44 @@
   </div>
 
   <script>
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const API_URL = (isLocal ? "http://localhost:5001" : "https://pawcare-el4w.onrender.com") + "/api/categories";
 
-    if (!currentUser || currentUser.role !== "admin") {
-      window.location.href = "login.html";
+  async function loadCategories() {
+    const res = await fetch(API_URL);
+    const categories = await res.json();
+    const container = document.getElementById("categoryList"); // Make sure this ID exists in your HTML list
+
+    container.innerHTML = categories.map(cat => `
+      <div class="flex items-center justify-between p-4 bg-white rounded-2xl mb-2 shadow-sm border border-gray-100">
+        <span class="font-bold text-[#4b3428]">${cat.name}</span>
+        <button onclick="deleteCategory('${cat._id}')" class="bg-red-50 text-red-500 px-4 py-1 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition">Delete</button>
+      </div>
+    `).join("");
+  }
+
+  async function addCategory() {
+    const input = document.getElementById("categoryInput");
+    const name = input.value.trim();
+    if (!name) return;
+
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
+    input.value = "";
+    loadCategories();
+  }
+
+  async function deleteCategory(id) {
+    if (confirm("Remove this category?")) {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      loadCategories();
     }
+  }
 
-    function logout() {
-      localStorage.removeItem("currentUser");
-      window.location.href = "login.html";
-    }
-
-    function getCategories() {
-      return JSON.parse(localStorage.getItem("pawcareCategories")) || [
-        "Nutrition",
-        "Grooming",
-        "Health",
-        "Behavior",
-        "Vaccination"
-      ];
-    }
-
-    function saveCategories(categories) {
-      localStorage.setItem("pawcareCategories", JSON.stringify(categories));
-    }
-
-    function renderCategories() {
-      const categoryList = document.getElementById("categoryList");
-      const categories = getCategories();
-
-      if (categories.length === 0) {
-        categoryList.innerHTML = `
-          <div class="rounded-2xl bg-[#f8f3e8] p-4 text-sm text-[#6b5b4e]">
-            No categories added yet.
-          </div>
-        `;
-        return;
-      }
-
-      categoryList.innerHTML = categories.map((category, index) => `
-        <div class="flex items-center justify-between rounded-2xl bg-[#f8f3e8] px-4 py-3">
-          <span class="font-semibold">${category}</span>
-          <button onclick="deleteCategory(${index})" class="rounded-xl bg-[#e7c0b8] px-3 py-1 text-sm font-semibold">
-            Delete
-          </button>
-        </div>
-      `).join("");
-    }
-
-    function addCategory() {
-      const input = document.getElementById("categoryInput");
-      const value = input.value.trim();
-
-      if (!value) {
-        alert("Please enter a category name.");
-        return;
-      }
-
-      const categories = getCategories();
-
-      if (categories.some(category => category.toLowerCase() === value.toLowerCase())) {
-        alert("Category already exists.");
-        return;
-      }
-
-      categories.push(value);
-      saveCategories(categories);
-
-      const logs = JSON.parse(localStorage.getItem("auditLogs")) || [];
-      logs.unshift({
-        action: "Category Added",
-        details: `${value} category was added.`,
-        date: new Date().toLocaleString()
-      });
-      localStorage.setItem("auditLogs", JSON.stringify(logs));
-
-      input.value = "";
-      renderCategories();
-    }
-
-    function deleteCategory(index) {
-      const categories = getCategories();
-      const removedCategory = categories[index];
-
-      categories.splice(index, 1);
-      saveCategories(categories);
-
-      const logs = JSON.parse(localStorage.getItem("auditLogs")) || [];
-      logs.unshift({
-        action: "Category Removed",
-        details: `${removedCategory} category was removed.`,
-        date: new Date().toLocaleString()
-      });
-      localStorage.setItem("auditLogs", JSON.stringify(logs));
-
-      renderCategories();
-    }
-
-    function getSettings() {
-      return JSON.parse(localStorage.getItem("pawcareSettings")) || {
-        defaultRole: "owner",
-        contentApproval: "required",
-        reminderType: "feeding"
-      };
-    }
-
-    function saveSettings() {
-      const settings = {
-        defaultRole: document.getElementById("defaultRole").value,
-        contentApproval: document.getElementById("contentApproval").value,
-        reminderType: document.getElementById("reminderType").value
-      };
-
-      localStorage.setItem("pawcareSettings", JSON.stringify(settings));
-
-      const logs = JSON.parse(localStorage.getItem("auditLogs")) || [];
-      logs.unshift({
-        action: "Settings Updated",
-        details: "System preferences were updated.",
-        date: new Date().toLocaleString()
-      });
-      localStorage.setItem("auditLogs", JSON.stringify(logs));
-
-      renderSettings();
-      alert("System settings saved successfully!");
-    }
-
-    function renderSettings() {
-      const settings = getSettings();
-
-      document.getElementById("defaultRole").value = settings.defaultRole;
-      document.getElementById("contentApproval").value = settings.contentApproval;
-      document.getElementById("reminderType").value = settings.reminderType;
-
-      document.getElementById("settingsPreview").innerHTML = `
-        <div class="rounded-[24px] bg-[#f8f3e8] p-5">
-          <div class="text-sm text-[#7a6a5a]">Default Role</div>
-          <div class="mt-2 text-2xl font-black capitalize text-[#5d7a49]">${settings.defaultRole}</div>
-        </div>
-
-        <div class="rounded-[24px] bg-[#fff7ea] p-5">
-          <div class="text-sm text-[#7a6a5a]">Content Approval</div>
-          <div class="mt-2 text-2xl font-black capitalize text-[#5d7a49]">${settings.contentApproval}</div>
-        </div>
-
-        <div class="rounded-[24px] bg-[#f8f3e8] p-5">
-          <div class="text-sm text-[#7a6a5a]">Reminder Type</div>
-          <div class="mt-2 text-2xl font-black capitalize text-[#5d7a49]">${settings.reminderType}</div>
-        </div>
-      `;
-    }
-
-    renderCategories();
-    renderSettings();
-  </script>
+  window.onload = loadCategories;
+</script>
 </body>
 </html>

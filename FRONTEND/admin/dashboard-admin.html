@@ -11,13 +11,11 @@
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-10px) rotate(2deg); }
     }
-
     @keyframes drift {
       0% { transform: translateX(0px); }
       50% { transform: translateX(12px); }
       100% { transform: translateX(0px); }
     }
-
     body {
       margin: 0;
       min-height: 100vh;
@@ -25,45 +23,26 @@
       color: #4b3428;
       font-family: Arial, Helvetica, sans-serif;
     }
-
     .paper {
       position: relative;
       background-image: radial-gradient(rgba(116, 126, 88, 0.08) 1px, transparent 1px);
       background-size: 22px 22px;
     }
-
     .floaty { animation: floaty 4s ease-in-out infinite; }
     .drift { animation: drift 8s ease-in-out infinite; }
-
-    .card-hover {
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .card-hover:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12);
-    }
-
-    .nav-link {
-      transition: all 0.2s ease;
-    }
-
-    .nav-link:hover {
-      background: #f1d6ad;
-    }
+    .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .card-hover:hover { transform: translateY(-6px); box-shadow: 0 18px 35px rgba(75, 52, 40, 0.12); }
+    .nav-link { transition: all 0.2s ease; }
+    .nav-link:hover { background: #f1d6ad; }
   </style>
 </head>
 
 <body class="paper overflow-x-hidden">
   <div class="absolute left-0 top-0 h-44 w-44 rounded-br-[90px] bg-[#e1b453]/60 blur-[1px]"></div>
   <div class="absolute bottom-0 right-0 h-56 w-56 rounded-tl-[110px] bg-[#e1b453]/60 blur-[1px]"></div>
-  <div class="absolute left-[8%] top-[12%] text-3xl opacity-25 floaty">🐾</div>
-  <div class="absolute right-[12%] top-[20%] text-2xl opacity-25 drift">🐾</div>
-  <div class="absolute left-[14%] bottom-[18%] text-2xl opacity-20 drift">🐾</div>
-  <div class="absolute right-[8%] bottom-[10%] text-3xl opacity-20 floaty">🐾</div>
 
   <div class="relative flex min-h-screen">
-
+    <!-- SIDEBAR -->
     <aside class="hidden w-72 flex-col border-r border-[#4b3428]/10 bg-white/65 p-6 backdrop-blur lg:flex">
       <div class="flex items-center gap-3">
         <div class="flex h-14 w-14 items-center justify-center rounded-3xl bg-[#f1d6ad] text-3xl shadow-sm">⚙️</div>
@@ -74,195 +53,138 @@
       </div>
 
       <nav class="mt-10 space-y-3">
-        <a href="dashboard-admin.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">
-          🏠 Dashboard
-        </a>
-        <a href="manage-users.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
-          👥 Manage Users
-        </a>
-        <a href="audit-logs.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
-          📝 Audit Logs
-        </a>
-        <a href="system-settings.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
-          ⚙️ System Settings
-        </a>
-        <a href="backup-recovery.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">
-          💾 Backup & Recovery
-        </a>
+        <a href="dashboard-admin.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-[#5d7a49] px-4 py-3 font-semibold text-white shadow-sm">🏠 Dashboard</a>
+        <a href="manage-users.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">👥 Manage Users</a>
+        <a href="audit-logs.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">📝 Audit Logs</a>
+        <a href="system-settings.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">⚙️ System Settings</a>
+        <a href="backup-recovery.html" class="nav-link flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 font-semibold">💾 Backup & Recovery</a>
       </nav>
-
-      <div class="mt-auto rounded-[28px] bg-[#f7f1df] p-5 shadow-inner">
-        <div class="text-sm text-[#7a6a5a]">Admin reminder</div>
-        <div class="mt-2 text-lg font-black">Protect system access</div>
-        <p class="mt-2 text-sm leading-6 text-[#6b5b4e]">
-          Manage roles carefully and review system logs regularly.
-        </p>
-      </div>
     </aside>
 
+    <!-- MAIN -->
     <main class="flex-1 px-6 py-6 md:px-8 lg:px-10">
       <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c8a5a]">Admin Panel</p>
           <h1 class="mt-2 text-4xl font-black md:text-5xl">Hello, <span id="adminName">Admin</span> 👋</h1>
-          <p class="mt-3 max-w-2xl text-base leading-7 text-[#6b5b4e] md:text-lg">
-            Manage users, monitor activity, configure system settings, and protect PawCare data.
-          </p>
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <a href="#" onclick="logout()" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-5 py-3 font-semibold shadow-sm">
+          <!-- FIXED: This button now correctly calls the logout function -->
+          <button onclick="logout()" class="rounded-2xl border border-[#4b3428]/10 bg-white/80 px-8 py-3 font-bold shadow-sm hover:bg-red-50 hover:text-red-600 transition">
             Log out
-          </a>
+          </button>
         </div>
       </header>
 
-      <div class="mb-6 flex gap-2 overflow-x-auto lg:hidden">
-        <a href="dashboard-admin.html" class="whitespace-nowrap rounded-2xl bg-[#5d7a49] px-4 py-2 font-semibold text-white shadow-sm">🏠 Dashboard</a>
-        <a href="manage-users.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">👥 Users</a>
-        <a href="audit-logs.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">📝 Logs</a>
-        <a href="system-settings.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">⚙️ Settings</a>
-        <a href="backup-recovery.html" class="whitespace-nowrap rounded-2xl bg-white px-4 py-2 font-semibold shadow-sm">💾 Backup</a>
-      </div>
-
+      <!-- STATS SECTION -->
       <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm text-center">
           <div class="text-sm text-[#7a6a5a]">Total Users</div>
           <div id="totalUsers" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
-          <div class="mt-2 text-sm text-[#6b5b4e]">Registered PawCare accounts</div>
-          <a href="manage-users.html" class="mt-4 inline-block rounded-2xl bg-[#5d7a49] px-4 py-2 text-sm font-semibold text-white">
-            Manage Users
-          </a>
         </div>
-
-        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm text-center">
           <div class="text-sm text-[#7a6a5a]">Owners</div>
           <div id="ownerCount" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
-          <div class="mt-2 text-sm text-[#6b5b4e]">Pet owner accounts</div>
-          <a href="manage-users.html" class="mt-4 inline-block rounded-2xl bg-[#f1d6ad] px-4 py-2 text-sm font-semibold">
-            View Owners
-          </a>
         </div>
-
-        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm text-center">
           <div class="text-sm text-[#7a6a5a]">Moderators</div>
           <div id="moderatorCount" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
-          <div class="mt-2 text-sm text-[#6b5b4e]">Content moderator accounts</div>
-          <a href="manage-users.html" class="mt-4 inline-block rounded-2xl bg-[#f1d6ad] px-4 py-2 text-sm font-semibold">
-            View Moderators
-          </a>
         </div>
-
-        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm">
+        <div class="card-hover rounded-[28px] border border-[#4b3428]/10 bg-white/80 p-6 shadow-sm text-center">
           <div class="text-sm text-[#7a6a5a]">Admins</div>
           <div id="adminCount" class="mt-2 text-4xl font-black text-[#5d7a49]">0</div>
-          <div class="mt-2 text-sm text-[#6b5b4e]">System admin accounts</div>
-          <a href="manage-users.html" class="mt-4 inline-block rounded-2xl bg-[#5d7a49] px-4 py-2 text-sm font-semibold text-white">
-            View Admins
-          </a>
         </div>
       </section>
 
       <section class="mt-8 grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+        <!-- ACTIVITY LOGS -->
         <div class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8">
-          <div class="mb-6">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">System Activity</p>
-            <h2 class="mt-2 text-3xl font-black">Recent Admin Actions</h2>
-          </div>
-
+          <h2 class="mt-2 text-3xl font-black mb-6">Recent Admin Actions</h2>
           <div id="recentLogs" class="space-y-4"></div>
         </div>
 
         <div class="space-y-8">
-          <div class="card-hover rounded-[32px] border border-[#4b3428]/10 bg-[#5d7a49] p-6 text-white shadow-sm md:p-8">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] opacity-80">Quick Admin Tasks</p>
-            <h2 class="mt-2 text-3xl font-black">Shortcuts</h2>
-
-            <div class="mt-5 grid gap-3">
-              <a href="manage-users.html" class="rounded-2xl bg-white/15 px-4 py-3 font-semibold">👥 Assign Roles</a>
-              <a href="audit-logs.html" class="rounded-2xl bg-white/15 px-4 py-3 font-semibold">📝 View Audit Logs</a>
-              <a href="system-settings.html" class="rounded-2xl bg-white/15 px-4 py-3 font-semibold">⚙️ Configure System</a>
-              <a href="backup-recovery.html" class="rounded-2xl bg-white/15 px-4 py-3 font-semibold">💾 Backup Data</a>
+          <!-- PET RECORDS LINK -->
+          <a href="all-pets.html" class="card-hover block rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8 hover:bg-[#f1d6ad]/20 transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">All Pets</p>
+                <h2 class="mt-2 text-3xl font-black text-[#4b3428]">Pet Records</h2>
+                <div class="mt-3 text-sm text-[#6b5b4e]">Click to view all pet details.</div>
+              </div>
+              <div class="text-3xl">🐾</div>
             </div>
-          </div>
-
-          <!-- REPLACE THE OLD BLOCK WITH THIS ONE -->
-<a href="all-pets.html" class="card-hover block rounded-[32px] border border-[#4b3428]/10 bg-white/85 p-6 shadow-sm md:p-8 hover:bg-[#f1d6ad]/20 transition">
-  <div class="flex justify-between items-start">
-    <div>
-      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#7c8a5a]">All Pets</p>
-      <h2 class="mt-2 text-3xl font-black text-[#4b3428]">Pet Records</h2>
-      <div class="mt-3 text-sm text-[#6b5b4e]">
-        Click to view all registered pets and their owners.
-      </div>
-    </div>
-    <div class="text-3xl">🐾</div>
-  </div>
-  <div id="petCount" class="mt-4 text-5xl font-black text-[#5d7a49]">0</div>
-</a>
+            <div id="petCount" class="mt-4 text-5xl font-black text-[#5d7a49]">0</div>
+          </a>
         </div>
       </section>
     </main>
   </div>
 
   <script>
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    // 1. CONFIGURATION
+    const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+    const API_BASE_URL = isLocal ? "http://localhost:5001" : "https://pawcare-el4w.onrender.com";
 
-  // Security Check
-  if (!currentUser || currentUser.role !== "admin") {
-    window.location.href = "../login/login.html";
-  }
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-  function logout() {
-    localStorage.clear();
-    window.location.href = "../PAWCARE2026.html";
-  }
-
-  async function loadDashboardStats() {
-    try {
-      // 1. Fetch User Stats (Total, Owners, Mods)
-      const userRes = await fetch("http://localhost:5001/api/manage-users");
-      const users = await userRes.json();
-      
-      document.getElementById("totalUsers").textContent = users.length;
-      document.getElementById("ownerCount").textContent = users.filter(u => u.role === "owner").length;
-      document.getElementById("moderatorCount").textContent = users.filter(u => u.role === "moderator").length;
-      document.getElementById("adminCount").textContent = users.filter(u => u.role === "admin").length;
-
-      // 2. Fetch Total Pet Records
-      const petRes = await fetch("http://localhost:5001/api/pets/admin/count");
-      const petData = await petRes.json();
-      document.getElementById("petCount").textContent = petData.total || 0;
-
-      // 3. Fetch Recent Admin Actions (Audit Logs)
-      const logRes = await fetch("http://localhost:5001/api/manage-users/admin/logs");
-      const logs = await logRes.json();
-      const logContainer = document.getElementById("recentLogs");
-
-      if (logs.length === 0) {
-        logContainer.innerHTML = `<p class="text-gray-400 italic">No recent activity.</p>`;
-      } else {
-        logContainer.innerHTML = logs.map(log => `
-          <div class="rounded-2xl bg-[#f8f3e8] p-4 border-l-4 border-[#5d7a49]">
-            <div class="flex justify-between items-start">
-              <span class="font-black text-[#4b3428]">${log.action}</span>
-              <span class="text-[10px] text-gray-400">${new Date(log.createdAt).toLocaleString()}</span>
-            </div>
-            <p class="text-sm text-[#6b5b4e] mt-1">${log.details}</p>
-            <p class="text-[10px] font-bold text-[#5d7a49] mt-2 uppercase">Admin: ${log.adminName}</p>
-          </div>
-        `).join("");
-      }
-
-    } catch (err) {
-      console.error("Dashboard Load Error:", err);
+    // Security Check
+    if (!currentUser || currentUser.role !== "admin") {
+      window.location.href = "../login/login.html";
     }
-  }
 
-  window.onload = () => {
-    document.getElementById("adminName").textContent = currentUser.name;
-    loadDashboardStats();
-  };
-</script>
+    // FIXED LOGOUT FUNCTION
+    function logout() {
+      localStorage.clear();
+      // Since we are in /admin/ folder, we use ../ to go to root where PAWCARE2026.html is
+      window.location.href = "../PAWCARE2026.html";
+    }
+
+    async function loadDashboardStats() {
+      try {
+        // Fetch User Stats
+        const userRes = await fetch(`${API_BASE_URL}/api/manage-users`);
+        const users = await userRes.json();
+        
+        document.getElementById("totalUsers").textContent = users.length;
+        document.getElementById("ownerCount").textContent = users.filter(u => u.role === "owner").length;
+        document.getElementById("moderatorCount").textContent = users.filter(u => u.role === "moderator").length;
+        document.getElementById("adminCount").textContent = users.filter(u => u.role === "admin").length;
+
+        // Fetch Pet Records
+        const petRes = await fetch(`${API_BASE_URL}/api/pets/admin/count`);
+        const petData = await petRes.json();
+        document.getElementById("petCount").textContent = petData.total || 0;
+
+        // Fetch Recent Admin Actions
+        const logRes = await fetch(`${API_BASE_URL}/api/manage-users/admin/logs`);
+        const logs = await logRes.json();
+        const logContainer = document.getElementById("recentLogs");
+
+        if (logs.length === 0) {
+          logContainer.innerHTML = `<p class="text-gray-400 italic">No recent activity.</p>`;
+        } else {
+          logContainer.innerHTML = logs.map(log => `
+            <div class="rounded-2xl bg-[#f8f3e8] p-4 border-l-4 border-[#5d7a49]">
+              <div class="flex justify-between items-start">
+                <span class="font-black text-[#4b3428]">${log.action}</span>
+                <span class="text-[10px] text-gray-400">${new Date(log.createdAt).toLocaleDateString()}</span>
+              </div>
+              <p class="text-sm text-[#6b5b4e] mt-1">${log.details}</p>
+            </div>
+          `).join("");
+        }
+
+      } catch (err) {
+        console.error("Dashboard Load Error:", err);
+      }
+    }
+
+    window.onload = () => {
+      document.getElementById("adminName").textContent = currentUser.name;
+      loadDashboardStats();
+    };
+  </script>
 </body>
 </html>

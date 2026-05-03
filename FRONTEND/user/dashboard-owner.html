@@ -392,7 +392,10 @@
    <script>
   // 1. GLOBAL DATA STORAGE
   let allMyPets = []; 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASE = isLocal ? "http://localhost:5001/api" : "https://pawcare-el4w.onrender.com/api";
 
   if (!currentUser) {
     window.location.href = "../login/login.html";
@@ -564,31 +567,58 @@
   }
 
   async function loadSchedules() {
-    const container = document.getElementById("scheduleContainer");
-    try {
-      const res = await fetch("http://localhost:5001/api/calendar");
-      const schedules = await res.json();
-      const mySchedules = schedules.filter(isMine);
+  const container = document.getElementById("scheduleContainer");
 
-      document.getElementById("reminderCount").textContent = mySchedules.length;
-      document.getElementById("reminderText").textContent =
-        mySchedules.length === 0 ? "No reminders yet" : `${mySchedules.length} reminder(s) scheduled`;
+  try {
+    const res = await fetch("http://localhost:5001/api/calendar?ownerId=" + currentUser._id);
+    const schedules = await res.json();
 
-      if (mySchedules.length === 0) {
-        container.innerHTML = `<p class="text-[#6b5b4e]">No schedules found.</p>`;
-        return;
-      }
+    const mySchedules = Array.isArray(schedules) ? schedules : [];
 
-      container.innerHTML = mySchedules.map(s => `
-        <div class="rounded-[28px] bg-[#f8f3e8] p-5 shadow-sm mb-3">
-          <div class="font-black">${s.title}</div>
-          <div class="text-sm text-[#6b5b4e]">${new Date(s.date).toLocaleString()}</div>
-        </div>
-      `).join("");
-    } catch (error) {
-      console.error(error);
+    const now = new Date();
+
+    const upcomingSchedules = mySchedules
+      .filter(s => new Date(s.date) >= now)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const appointments = upcomingSchedules.filter(s =>
+      (s.category || "").toLowerCase() === "appointment"
+    );
+
+    document.getElementById("reminderCount").textContent = upcomingSchedules.length;
+    document.getElementById("reminderText").textContent =
+      upcomingSchedules.length === 0
+        ? "No reminders yet"
+        : `${upcomingSchedules.length} upcoming schedule(s)`;
+
+    const nextAppointment = appointments[0];
+
+    if (nextAppointment) {
+      document.getElementById("nextAppointmentTitle").textContent = nextAppointment.title;
+      document.getElementById("nextAppointmentDate").textContent =
+        new Date(nextAppointment.date).toLocaleString();
+    } else {
+      document.getElementById("nextAppointmentTitle").textContent = "None";
+      document.getElementById("nextAppointmentDate").textContent = "No appointment scheduled";
     }
+
+    if (mySchedules.length === 0) {
+      container.innerHTML = `<p class="text-[#6b5b4e]">No schedules found.</p>`;
+      return;
+    }
+
+    container.innerHTML = upcomingSchedules.map(s => `
+      <div class="rounded-[28px] bg-[#f8f3e8] p-5 shadow-sm mb-3">
+        <div class="font-black">${s.title}</div>
+        <div class="text-xs font-bold uppercase text-[#7c8a5a]">${s.category || "Reminder"}</div>
+        <div class="text-sm text-[#6b5b4e]">${new Date(s.date).toLocaleString()}</div>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error(error);
   }
+}
 
   async function sendMessage() {
     const messageInput = document.getElementById("chatInput");
@@ -691,113 +721,41 @@
       }
     }
   }
-// --- RESOURCE LOGIC ---
-async function handleResourceSubmit() {
-  const title = prompt("Enter Resource Title:");
-  const content = prompt("Enter Resource Content (Tip/Article):");
-  
-  if(!title || !content) return; // Don't send if empty
 
-  const body = {
-    title,
-    content,
-    category: "Owner Suggestion",
-    publishedBy: currentUser.name || "A Pet Owner",
-    role: "owner" // This tells the backend to save as 'pending'
-  };
+
+async function loadResourceCategories() {
+  const select = document.getElementById("newResCategory");
 
   try {
-    const res = await fetch("http://localhost:5001/api/resources", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
+    const res = await fetch(`${API_BASE}/categories`);
+    const categories = await res.json();
 
-    if (res.ok) {
-      alert("Submission successful! It will appear here once approved by a moderator.");
+    if (!Array.isArray(categories) || categories.length === 0) {
+      select.innerHTML = `<option value="General">General</option>`;
+      return;
     }
-  } catch (err) {
-    alert("Error submitting resource.");
+
+    select.innerHTML = categories.map(cat => `
+      <option value="${cat.name}">${cat.name}</option>
+    `).join("");
+
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+    select.innerHTML = `<option value="General">General</option>`;
   }
 }
 
-async function loadResources() {
-  try {
-    const res = await fetch("http://localhost:5001/api/resources?status=approved");
-    const data = await res.json();
-    const container = document.getElementById("resourcesContainer");
+async function openSuggestModal() {
+  document.getElementById("resModal").classList.remove("hidden");
+  document.getElementById("resModal").classList.add("flex");
 
-    // Filter into two groups
-    const featured = data.filter(r => r.isFeatured);
-    const regular = data.filter(r => !r.isFeatured);
-
-    let html = "";
-
-    // Add Featured Section first
-    if (featured.length > 0) {
-      html += `<div class="col-span-full mb-4"><p class="text-xs font-bold text-[#e1b453] uppercase tracking-widest">⭐ Editor's Picks</p></div>`;
-      html += featured.map(r => `
-        <div class="col-span-full bg-white border-2 border-[#e1b453] p-6 rounded-[32px] shadow-md mb-6">
-          <h4 class="text-2xl font-black text-[#4b3428]">${r.title}</h4>
-          <p class="text-[#6b5b4e] mt-3">${r.content}</p>
-          <div class="mt-4 text-[10px] font-bold text-[#e1b453] uppercase">Trusted Advice • ${r.category}</div>
-        </div>
-      `).join("");
-    }
-
-    // Add Regular Section
-    html += `<div class="col-span-full mt-4 mb-4"><p class="text-xs font-bold text-[#7c8a5a] uppercase tracking-widest">All Resources</p></div>`;
-    html += regular.map(r => `
-      <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm relative">
-        <button onclick="flagThis('${r._id}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500">🚩</button>
-        <h4 class="font-black text-lg text-[#4b3428]">${r.title}</h4>
-        <p class="text-sm text-[#6b5b4e] mt-2">${r.content}</p>
-      </div>
-    `).join("");
-
-    container.innerHTML = html;
-  } catch (e) { console.error(e); }
-}
-// MODAL CONTROLS
-function openResourceModal() { document.getElementById("resourceModal").classList.remove("hidden"); document.getElementById("resourceModal").classList.add("flex"); }
-function closeResourceModal() { document.getElementById("resourceModal").classList.add("hidden"); document.getElementById("resourceModal").classList.remove("flex"); }
-
-// LOAD ONLY APPROVED
-async function loadResources() {
-  const container = document.getElementById("resourcesContainer");
-  try {
-    const res = await fetch("http://localhost:5001/api/resources?status=approved");
-    const data = await res.json();
-    if (data.length === 0) { container.innerHTML = `<p class="text-[#6b5b4e]">No approved resources yet.</p>`; return; }
-    container.innerHTML = data.map(r => `
-      <div class="rounded-2xl bg-white p-5 shadow-sm border border-[#4b3428]/5">
-        <span class="text-[10px] font-bold uppercase text-[#7c8a5a] bg-[#f1d6ad]/30 px-2 py-1 rounded-md">${r.category}</span>
-        <h4 class="font-black text-lg mt-2">${r.title}</h4>
-        <p class="text-sm text-[#6b5b4e] mt-2">${r.content}</p>
-        <p class="text-[10px] text-gray-400 mt-4 italic">By ${r.publishedBy} • Approved ✅</p>
-      </div>
-    `).join("");
-  } catch (err) { console.error(err); }
+  await loadResourceCategories();
 }
 
-// SUBMIT PENDING
-async function submitResourceRequest() {
-  const title = document.getElementById("newResTitle").value;
-  const category = document.getElementById("newResCategory").value;
-  const content = document.getElementById("newResContent").value;
-  if (!title || !content) return alert("Please fill title and content");
-
-  await fetch("http://localhost:5001/api/resources", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, category, content, publishedBy: currentUser.name, role: "owner" })
-  });
-  alert("Submitted! It will appear once approved by a moderator.");
-  closeResourceModal();
-}
-function openSuggestModal() {
-  document.getElementById('resModal').classList.remove('hidden');
-  document.getElementById('resModal').classList.add('flex');
+function closeSuggestModal() {
+  const modal = document.getElementById("resModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
 }
 
 async function submitSuggestion() {
@@ -813,26 +771,29 @@ async function submitSuggestion() {
   }
 
   try {
-    const res = await fetch("http://localhost:5001/api/resources", {
+   const res = await fetch(`${API_BASE}/resources`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: title,
-        content: content,
-        category: category,
-        publishedBy: currentUser.name,
-        role: "owner"
-      })
+     body: JSON.stringify({
+  title: title,
+  content: content,
+  category: category,
+  publishedBy: currentUser.name,
+  role: "owner"
+})
     });
 
     if (res.ok) {
-      alert("Submitted successfully! 🐾");
-      // Clear fields
-      document.getElementById('uniqueTitle').value = "";
-      document.getElementById('uniqueContent').value = "";
-      // Close modal
-      document.getElementById('resModal').classList.replace('flex', 'hidden');
-    } else {
+  alert("Submitted successfully! It is now pending approval. 🐾");
+
+  document.getElementById('uniqueTitle').value = "";
+  document.getElementById('uniqueContent').value = "";
+
+  closeSuggestModal();
+
+  // Refresh resources so the pending suggestion appears immediately
+  loadResources();
+} else {
       alert("Failed to save to database.");
     }
   } catch (err) {
@@ -841,28 +802,79 @@ async function submitSuggestion() {
   }
 }
 
-// Update loadResources to fetch ONLY approved
 async function loadResources() {
   const container = document.getElementById("resourcesContainer");
-  const res = await fetch("http://localhost:5001/api/resources?status=approved");
-  const data = await res.json();
-  if(data.length === 0) { container.innerHTML = "No resources yet."; return; }
-  container.innerHTML = data.map(r => `
-    <div class="bg-white p-5 rounded-2xl border mb-3">
-      <h4 class="font-black text-lg">${r.title}</h4>
-      <p class="text-sm text-[#6b5b4e] mt-1">${r.content}</p>
-    </div>
-  `).join("");
+
+  try {
+    const approvedRes = await fetch(`${API_BASE}/resources?status=approved`);
+    const approvedData = await approvedRes.json();
+
+    const pendingRes = await fetch(`${API_BASE}/resources?status=pending`);
+    const pendingData = await pendingRes.json();
+
+    const approvedResources = Array.isArray(approvedData) ? approvedData : [];
+    const pendingResources = Array.isArray(pendingData) ? pendingData : [];
+
+    const myPendingResources = pendingResources.filter(r =>
+      r.publishedBy === currentUser.name
+    );
+
+    const visibleResources = [
+      ...myPendingResources,
+      ...approvedResources
+    ];
+
+    if (visibleResources.length === 0) {
+      container.innerHTML = `<p class="text-[#6b5b4e]">No resources yet.</p>`;
+      return;
+    }
+
+    container.innerHTML = visibleResources.map(r => {
+      const isPending = r.status === "pending";
+
+      return `
+        <div class="bg-white p-5 rounded-2xl border mb-3">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-[10px] font-bold uppercase text-[#7c8a5a] bg-[#f1d6ad]/30 px-2 py-1 rounded-md">
+              ${r.category || "General"}
+            </span>
+
+            ${
+              isPending
+                ? `<span class="text-[10px] font-bold uppercase text-yellow-700 bg-yellow-100 px-2 py-1 rounded-md">
+                    Pending
+                  </span>`
+                : `<span class="text-[10px] font-bold uppercase text-green-700 bg-green-100 px-2 py-1 rounded-md">
+                    Approved
+                  </span>`
+            }
+          </div>
+
+          <h4 class="font-black text-lg mt-2">${r.title}</h4>
+          <p class="text-sm text-[#6b5b4e] mt-1">${r.content}</p>
+
+          <p class="text-[10px] text-gray-400 mt-4 italic">
+            By ${r.publishedBy || "Unknown"} • ${
+              isPending ? "Waiting for approval" : "Approved ✅"
+            }
+          </p>
+        </div>
+      `;
+    }).join("");
+
+  } catch (error) {
+    console.error("Failed to load resources:", error);
+    container.innerHTML = `<p class="text-red-500">Failed to load resources.</p>`;
+  }
 }
-// Add loadResources() to your existing window.onload!
 
 // Update your window.onload at the very bottom to include loadResources()
 window.onload = function () {
-    document.getElementById("welcomeName").textContent = `Hello, ${currentUser.name || "Owner"} 👋`;
-    showSection("overview");
-    loadPets();
-    loadSchedules();
-    loadResources(); // ADD THIS LINE
+  document.getElementById("welcomeName").textContent = `Hello, ${currentUser.name || "Owner"} 👋`;
+  showSection("overview");
+  loadPets();
+  loadSchedules();
+  loadResources();
 };
 
 </script>
@@ -874,12 +886,9 @@ window.onload = function () {
     </div>
     <div class="space-y-4">
       <input type="text" id="uniqueTitle" placeholder="Title" class="w-full rounded-2xl border bg-gray-50 p-3 outline-none">
-      <select id="newResCategory" class="w-full rounded-2xl border bg-gray-50 p-3 outline-none">
-        <option value="Health">Health</option>
-        <option value="Training">Training</option>
-        <option value="Nutrition">Nutrition</option>
-        <option value="General">General</option>
-      </select>
+     <select id="newResCategory" class="w-full rounded-2xl border bg-gray-50 p-3 outline-none">
+  <option value="">Loading categories...</option>
+</select>
       <textarea id="uniqueContent" placeholder="Content..." class="w-full h-32 rounded-2xl border bg-gray-50 p-3 outline-none resize-none"></textarea>
       <button onclick="submitSuggestion()" class="w-full rounded-2xl bg-[#5d7a49] py-4 font-bold text-white shadow-lg">Submit for Approval</button>
     </div>
